@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" href="style.css">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLBB Draft Pick - Display Overlay</title>
+    <style>
+        /* Mode display: bersih, transparan, tanpa scrollbar */
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: transparent !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- BAN ROW -->
+    <div class="ban">
+
+        <div class="teamnameblue">
+            <div class="team-name-display" id="teamNameDisplay1">Blue Side</div>
+        </div>
+
+        <div class="ban1"><div id="image-display-6"  class="image-display"></div></div>
+        <div class="ban1"><div id="image-display-7"  class="image-display"></div></div>
+        <div class="ban1"><div id="image-display-8"  class="image-display"></div></div>
+        <div class="ban1"><div id="image-display-9"  class="image-display"></div></div>
+        <div class="ban1"><div id="image-display-10" class="image-display"></div></div>
+
+        <div class="tournamentname">
+            <p id="tournamentnameOutput" class="tournamentnamemid"></p>
+        </div>
+
+        <div class="ban1"><div id="image-display-20" class="image-display"></div></div>
+        <div class="ban1"><div id="image-display-19" class="image-display"></div></div>
+        <div class="ban1"><div id="image-display-18" class="image-display"></div></div>
+        <div class="ban1"><div id="image-display-17" class="image-display"></div></div>
+        <div class="ban1"><div id="image-display-16" class="image-display"></div></div>
+
+        <div class="teamnamered">
+            <div class="team-name-display" id="teamNameDisplay2">Red Side</div>
+        </div>
+
+    </div>
+
+    <!-- PICK ROW -->
+    <div class="pick">
+
+        <!-- Blue Side Picks 1–5 -->
+        <div class="pick1">
+            <div class="nameholder">
+                <h2></h2>
+                <div id="outputContainer"><p id="output1"></p></div>
+            </div>
+            <div id="image-display-1" class="image-display"></div>
+        </div>
+
+        <div class="pick1">
+            <div class="nameholder">
+                <h2></h2>
+                <div id="outputContainer"><p id="output2"></p></div>
+            </div>
+            <div id="image-display-2" class="image-display"></div>
+        </div>
+
+        <div class="pick1">
+            <div class="nameholder">
+                <h2></h2>
+                <div id="outputContainer"><p id="output3"></p></div>
+            </div>
+            <div id="image-display-3" class="image-display"></div>
+        </div>
+
+        <div class="pick1">
+            <div class="nameholder">
+                <h2></h2>
+                <div id="outputContainer"><p id="output4"></p></div>
+            </div>
+            <div id="image-display-4" class="image-display"></div>
+        </div>
+
+        <div class="pick1">
+            <div class="nameholder">
+                <h2></h2>
+                <div id="outputContainer"><p id="output5"></p></div>
+            </div>
+            <div id="image-display-5" class="image-display"></div>
+        </div>
+
+        <!-- Info Turnamen Tengah -->
+        <div class="tournamentinfo">
+            <div class="tournamentlogo">
+                <img class="logoprop" src="Assets/Other/tournamentlogo.png">
+            </div>
+
+            <div class="bluevsred">
+                <div class="bluelogo">
+                    <div class="image-container">
+                        <img id="image1" src="https://via.placeholder.com/300x200?text=Image+1" alt="Logo Blue">
+                    </div>
+                </div>
+                <div class="vslogo">
+                    <img class="vsprop" src="Assets/Other/vs.png">
+                </div>
+                <div class="redlogo">
+                    <div class="image-container">
+                        <img id="image2" src="https://via.placeholder.com/300x200?text=Image+2" alt="Logo Red">
+                    </div>
+                </div>
+            </div>
+
+            <div class="winlose">
+                <div class="win1">
+                    <div class="w"><div class="wimg"><img id="extraImage1" src="Assets/Other/win.png"></div></div>
+                    <div class="w"><div class="wimg"><img id="extraImage2" src="Assets/Other/win.png"></div></div>
+                    <div class="w"><div class="wimg"><img id="extraImage3" src="Assets/Other/win.png"></div></div>
+                </div>
+                <div class="midwin"></div>
+                <div class="win1">
+                    <div class="w"><div class="wimg"><img id="extraImage6" src="Assets/Other/win.png"></div></div>
+                    <div class="w"><div class="wimg"><img id="extraImage5" src="Assets/Other/win.png"></div></div>
+                    <div class="w"><div class="wimg"><img id="extraImage4" src="Assets/Other/win.png"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Red Side Picks 15–11 (urutan terbalik) -->
+        <div class="pick1">
+            <div class="nameholder">
+                <h2></h2>
+                <div id="outputContainer"><p id="output10"></p></div>
+            </div>
+            <div id="image-display-15" class="image-display"></div>
+        </div>
+
+        <div class="pick1">
+            <div class="nameholder">
+                <h2></h2>
+                <div id="outputContainer"><p id="output9"></p></div>
+            </div>
+            <div id="image-display-14" class="image-display"></div>
+        </div>
+
+        <div class="pick1">
+            <div class="nameholder">
+                <h2></h2>
+                <div id="outputContainer"><p id="output8"></p></div>
+            </div>
+            <div id="image-display-13" class="image-display"></div>
+        </div>
+
+        <div class="pick1">
+            <div class="nameholder">
+                <h2></h2>
+                <div id="outputContainer"><p id="output7"></p></div>
+            </div>
+            <div id="image-display-12" class="image-display"></div>
+        </div>
+
+        <div class="pick1">
+            <div class="nameholder">
+                <h2></h2>
+                <div id="outputContainer"><p id="output6"></p></div>
+            </div>
+            <div id="image-display-11" class="image-display"></div>
+        </div>
+
+    </div>
+
+</body>
+<script src="display.js"></script>
+</html>
