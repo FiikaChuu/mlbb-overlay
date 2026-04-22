@@ -150,6 +150,15 @@ for (let i = 1; i <= 20; i++) appState.slots[i]     = null;
 for (let i = 1; i <= 10; i++) appState.nicknames[i]  = '';
 for (let i = 1; i <= 6;  i++) appState.wins[i]       = false;
 
+// Countdown state
+appState.countdown = {
+    totalSeconds: 60,
+    startedAt:    null,    // Date.now() saat START ditekan
+    pausedAt:     60000,   // sisa ms saat PAUSE (default = full)
+    running:      false
+};
+
+
 // ============================================================
 // WEBSOCKET CLIENT (Control Panel → Server → Display)
 // Ganti 'localhost' dengan IP PC server jika berbeda jaringan
@@ -235,6 +244,44 @@ function updateHeroImage(hero, id) {
 
     // Update state & kirim ke display
     appState.slots[id] = { name: hero.name, img: hero.img, sound: hero.sound };
+    sendState();
+}
+
+// ============================================================
+// COUNTDOWN CONTROL
+// ============================================================
+function countdownSet() {
+    const val = parseInt(document.getElementById('countdownInput').value);
+    if (isNaN(val) || val < 1) return;
+    appState.countdown = { totalSeconds: val, startedAt: null, pausedAt: val * 1000, running: false };
+    sendState();
+}
+
+function countdownStart() {
+    const cd = appState.countdown;
+    const remainingMs = cd.pausedAt !== null ? cd.pausedAt : cd.totalSeconds * 1000;
+    appState.countdown = {
+        totalSeconds: cd.totalSeconds,
+        startedAt:    Date.now() - (cd.totalSeconds * 1000 - remainingMs),
+        pausedAt:     null,
+        running:      true
+    };
+    sendState();
+}
+
+function countdownPause() {
+    const cd = appState.countdown;
+    let remainingMs = cd.totalSeconds * 1000;
+    if (cd.running && cd.startedAt !== null) {
+        remainingMs = Math.max(0, cd.totalSeconds * 1000 - (Date.now() - cd.startedAt));
+    }
+    appState.countdown = { totalSeconds: cd.totalSeconds, startedAt: null, pausedAt: remainingMs, running: false };
+    sendState();
+}
+
+function countdownReset() {
+    const cd = appState.countdown;
+    appState.countdown = { totalSeconds: cd.totalSeconds, startedAt: null, pausedAt: cd.totalSeconds * 1000, running: false };
     sendState();
 }
 
@@ -421,3 +468,33 @@ tournamentnameInput.addEventListener('input', function() {
 // START — inisialisasi WebSocket saat halaman dimuat
 // ============================================================
 initWebSocket();
+
+// ============================================================
+// COUNTDOWN DISPLAY — update angka detik di panel operator
+// (menampilkan sisa detik di area bekas VS logo, format: "60")
+// ============================================================
+setInterval(() => {
+    const cd = appState.countdown;
+    if (!cd) return;
+
+    let remainingMs;
+    if (cd.running && cd.startedAt !== null) {
+        remainingMs = (cd.totalSeconds * 1000) - (Date.now() - cd.startedAt);
+    } else {
+        remainingMs = cd.pausedAt !== null ? cd.pausedAt : cd.totalSeconds * 1000;
+    }
+    remainingMs = Math.max(0, remainingMs);
+
+    const secs = Math.ceil(remainingMs / 1000);
+    const el   = document.getElementById('ctrlCountdownSecs');
+    if (!el) return;
+
+    el.textContent = secs;
+
+    // Efek urgent saat detik terakhir (< 10)
+    if (secs <= 10 && cd.running) {
+        el.classList.add('urgent');
+    } else {
+        el.classList.remove('urgent');
+    }
+}, 100);

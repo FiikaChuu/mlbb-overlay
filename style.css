@@ -99,6 +99,10 @@
     background-position: center;    
     margin-left: 5px;
     margin-right: 5px;
+    /* Flex column agar children tertata vertikal */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .tournamentlogo{
@@ -147,6 +151,41 @@
     object-fit: contain;
 }
 
+/* ── Countdown seconds display di panel operator (gantikan VS logo) ── */
+.ctrl-countdown-wrap {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ctrl-countdown-secs {
+    font-family: 'bebas neue', sans-serif;
+    font-size: 46px;
+    color: #cc0000;
+    text-shadow: 0 0 12px rgba(200, 0, 0, 0.7),
+                 0 2px 4px rgba(0,0,0,0.8);
+    letter-spacing: 2px;
+    line-height: 1;
+    transition: color 0.3s;
+}
+
+/* Warna berubah merah terang saat < 10 detik */
+.ctrl-countdown-secs.urgent {
+    color: #ff0000;
+    text-shadow: 0 0 20px rgba(255, 0, 0, 0.9),
+                 0 0 8px rgba(255, 100, 0, 0.8);
+    animation: pulse-urgent 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-urgent {
+    from { transform: scale(1);   }
+    to   { transform: scale(1.08); }
+}
+
+
+
 .redlogo{
     width: 83.33333333333333px;
     height: 80px;
@@ -180,6 +219,130 @@
 .midwin{
     width: 83.33333px;
     height: 10px;
+}
+
+/* ════════════════════════════════════════════
+   3-KOLOM TEAMS DISPLAY (sesuai wireframe)
+════════════════════════════════════════════ */
+
+/* Container utama: flex row isi sisa tinggi tournamentinfo */
+.teams-display {
+    display: flex;
+    flex: 1;                /* ambil sisa space setelah logo + countdown */
+    align-items: stretch;
+    min-height: 0;
+}
+
+/* ── Kolom Tim (kiri / kanan) ── */
+.team-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    padding: 0 2px;
+}
+
+/* Accent bar hijau di atas logo — sama dengan wireframe */
+.team-accent-bar {
+    width: 100%;
+    height: 5px;
+    background: #00cc22;
+    flex-shrink: 0;
+}
+
+/* Logo box: rectangle besar, fill penuh lebar kolom */
+.team-logo-box {
+    width: 100%;
+    flex: 1;               /* isi ruang vertikal yang tersedia */
+    min-height: 60px;
+    background: #0000cc;   /* fallback jika gambar belum diupload */
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.team-logo-full {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+/* Nama tim kecil di bawah logo */
+.team-name-bottom {
+    font-family: 'bebas neue', sans-serif;
+    font-size: 13px;
+    color: #ffffff;
+    letter-spacing: 1.5px;
+    text-align: center;
+    text-shadow: 0 0 6px rgba(0,0,0,0.9);
+    padding: 2px 0;
+    width: 100%;
+    flex-shrink: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Win dots row di bawah setiap logo */
+.win-dots-row {
+    display: flex;
+    gap: 3px;
+    justify-content: center;
+    align-items: center;
+    padding: 3px 2px;
+    flex-shrink: 0;
+}
+
+.wdot {
+    width: 24px;
+    height: 8px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wdot-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* ── Kolom tengah: pick arrow ── */
+.pick-center-col {
+    width: 42px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 5px;      /* turun sedikit agar sejajar dengan logo box */
+}
+
+/* ── Pick Indicator Arrow ── */
+.pick-arrow-icon {
+    font-size: 28px;
+    color: #cc0000;
+    display: inline-block;
+    filter: drop-shadow(0 0 8px rgba(200,0,0,0.9));
+    transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+                color 0.3s ease;
+    transform: translateX(0) rotate(0deg);
+}
+
+/* Blue baru pick → Red's turn → arrow kanan */
+.pick-arrow-icon.turn-red {
+    transform: translateX(8px) rotate(0deg);
+    color: #ff3300;
+}
+
+/* Red baru pick → Blue's turn → arrow kiri */
+.pick-arrow-icon.turn-blue {
+    transform: translateX(-8px) rotate(180deg);
+    color: #ff3300;
 }
 
 
@@ -393,3 +556,329 @@
     border-radius: 4px;
     border: 1px solid #ddd;
 }
+
+/* ── Logo Upload Section ── */
+.logo-upload-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+}
+
+.logo-preview-wrap {
+    flex-shrink: 0;
+}
+
+.logo-preview-img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    border-radius: 50%;
+    border: 2px solid #555;
+    background: #222;
+    display: block;
+}
+
+.logo-upload-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.logo-upload-label {
+    font-size: 11px;
+    font-weight: bold;
+    color: #ccc;
+    letter-spacing: 0.5px;
+}
+
+/* Tombol upload yang terlihat seperti button */
+.logo-upload-btn {
+    display: inline-block;
+    padding: 5px 12px;
+    background: #2a5298;
+    color: #fff;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s;
+    text-align: center;
+    user-select: none;
+}
+.logo-upload-btn:hover {
+    background: #3a6bc8;
+}
+
+/* Input nama tim di logo section */
+.logo-upload-info input[type="text"] {
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 4px;
+    border: 1px solid #aaa;
+    width: 110px;
+    box-sizing: border-box;
+}
+
+
+
+/* ══════════════════════════════════════════════════
+   CENTER TOURNAMENT INFO — REDESIGNED
+══════════════════════════════════════════════════ */
+
+/* ── Countdown Bar: full-width rectangle gelap ── */
+.countdown-bar-main {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 26px;
+    background: #0d0d0d;
+    border-top:    1px solid #222;
+    border-bottom: 1px solid #222;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* Setengah bar kiri & kanan */
+.cdbar-left,
+.cdbar-right {
+    flex: 1;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Fill bar kiri — anchored right, mengecil ke kiri */
+.countdown-fill-left {
+    position: absolute;
+    right: 0; top: 0;
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(to left, #cc1100, #7a0000);
+    transition: width 0.2s linear;
+}
+
+/* Fill bar kanan — anchored left, mengecil ke kanan */
+.countdown-fill-right {
+    position: absolute;
+    left: 0; top: 0;
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(to right, #cc1100, #7a0000);
+    transition: width 0.2s linear;
+}
+
+/* Teks waktu di tengah bar */
+.countdown-center-text {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 8px;
+    white-space: nowrap;
+    font-family: 'bebas neue', sans-serif;
+    font-size: 18px;
+    color: #fff;
+    letter-spacing: 2px;
+    min-width: 66px;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 0 10px rgba(0,0,0,1);
+}
+
+.countdown-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: #ff2200;
+    box-shadow: 0 0 6px #ff3300;
+    display: inline-block;
+    flex-shrink: 0;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+/* ── Row Tim (logo + nama + pick indicator) ── */
+.teams-center-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 5px 6px;
+    box-sizing: border-box;
+    min-height: 58px;
+}
+
+.team-center {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex: 1;
+    min-width: 0;
+}
+
+.blue-center { justify-content: flex-start; }
+.red-center  { justify-content: flex-end;   }
+
+/* Logo dalam lingkaran */
+.team-logo-center {
+    width: 46px;
+    height: 46px;
+    object-fit: contain;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    border: 2px solid rgba(255,255,255,0.15);
+    flex-shrink: 0;
+}
+
+/* Nama tim di center row */
+.team-name-label {
+    font-family: 'bebas neue', sans-serif;
+    font-size: 21px;
+    color: #ffffff;
+    letter-spacing: 2px;
+    text-shadow: 1px 1px 6px rgba(0,0,0,0.9);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ── Pick Indicator ── */
+.pick-indicator-wrap {
+    width: 38px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pick-arrow-icon {
+    font-size: 26px;
+    color: #cc0000;
+    display: inline-block;
+    filter: drop-shadow(0 0 8px rgba(200,0,0,0.9));
+    /* Animasi smooth */
+    transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+                color 0.3s ease;
+    transform: translateX(0) rotate(0deg);
+}
+
+/* Blue baru pick → giliran Red → arrow ke kanan */
+.pick-arrow-icon.turn-red {
+    transform: translateX(10px) rotate(0deg);
+    color: #ff3300;
+}
+
+/* Red baru pick → giliran Blue → arrow ke kiri (balik) */
+.pick-arrow-icon.turn-blue {
+    transform: translateX(-10px) rotate(180deg);
+    color: #ff3300;
+}
+
+/* ── Kontrol countdown di panel operator ── */
+.countdown-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    margin-left: 10px;
+    flex-wrap: wrap;
+}
+.countdown-controls label {
+    font-size: 13px;
+    font-weight: bold;
+}
+.countdown-controls input[type="number"] {
+    width: 55px;
+    padding: 4px 6px;
+    font-size: 13px;
+    border-radius: 4px;
+    border: 1px solid #aaa;
+}
+
+
+/* ──────────────────────────────────────
+   COUNTDOWN ROW
+────────────────────────────────────── */
+.countdown-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 22px;
+    margin-top: 3px;
+    background: transparent;
+}
+
+/* Persegi panjang kiri & kanan */
+.countdown-rect {
+    flex: 1;
+    height: 16px;
+    background-color: #1a1a1a;
+    border: 1px solid #3a3a3a;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Isi bar — depletes as time runs out */
+.countdown-fill-left {
+    position: absolute;
+    right: 0; top: 0;
+    height: 100%;
+    width: 100%;           /* diupdate via JS */
+    background: linear-gradient(to left, #cc0000, #880000);
+    transition: width 0.2s linear;
+}
+.countdown-fill-right {
+    position: absolute;
+    left: 0; top: 0;
+    height: 100%;
+    width: 100%;           /* diupdate via JS */
+    background: linear-gradient(to right, #cc0000, #880000);
+    transition: width 0.2s linear;
+}
+
+/* Tengah: titik merah + angka */
+.countdown-center {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 8px;
+    white-space: nowrap;
+    font-family: 'bebas neue', sans-serif;
+    font-size: 18px;
+    color: #ffffff;
+    min-width: 60px;
+    justify-content: center;
+    letter-spacing: 1px;
+}
+
+.countdown-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: #ff2200;
+    box-shadow: 0 0 6px #ff3300;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+/* Kontrol countdown di panel */
+.countdown-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    margin-left: 10px;
+    flex-wrap: wrap;
+}
+.countdown-controls label {
+    font-size: 13px;
+    font-weight: bold;
+}
+.countdown-controls input[type="number"] {
+    width: 55px;
+    padding: 4px 6px;
+    font-size: 13px;
+    border-radius: 4px;
+    border: 1px solid #aaa;
+}
