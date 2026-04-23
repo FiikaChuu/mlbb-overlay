@@ -11,15 +11,6 @@ const WS_URL = 'ws://localhost:3000';
 let prevSlots = {};
 for (let i = 1; i <= 20; i++) prevSlots[i] = null;
 
-// State pick indicator
-let lastPickSide    = null;  // 'blue', 'red', atau null
-// State countdown (diupdate dari server)
-let currentCountdown = null;
-
-
-
-
-
 // ============================================================
 // WEBSOCKET CLIENT
 // ============================================================
@@ -63,42 +54,36 @@ function initWebSocket() {
 // RENDER STATE — dipanggil setiap kali ada state baru dari server
 // ============================================================
 function renderState(state) {
-    if (state.slots)                       renderSlots(state.slots);
-    if (state.teams)                       renderTeamNames(state.teams);
-    if (state.nicknames)                   renderNicknames(state.nicknames);
-    if (state.logos)                       renderLogos(state.logos);
-    if (state.wins)                        renderWins(state.wins);
+    if (state.slots)         renderSlots(state.slots);
+    if (state.teams)         renderTeamNames(state.teams);
+    if (state.nicknames)     renderNicknames(state.nicknames);
+    if (state.logos)         renderLogos(state.logos);
+    if (state.wins)          renderWins(state.wins);
     if (state.tournamentName !== undefined) renderTournamentName(state.tournamentName);
-    if (state.countdown)                   currentCountdown = state.countdown;
 }
-
 
 // ============================================================
 // RENDER SLOTS (hero pick/ban dengan animasi)
 // ============================================================
 function renderSlots(slots) {
-    let justPickedSide = null;
-
     for (let i = 1; i <= 20; i++) {
-        const hero     = slots[i]     || null;
+        const hero     = slots[i]    || null;
         const prev     = prevSlots[i] || null;
         const heroName = hero ? hero.name : null;
         const prevName = prev ? prev.name : null;
 
+        // Tidak ada perubahan — skip
         if (heroName === prevName) continue;
 
         const container = document.getElementById(`image-display-${i}`);
         if (!container) continue;
 
-        // Deteksi pick side (slot 1-5 = blue, 11-15 = red)
         if (heroName && !prevName) {
-            if (i >= 1 && i <= 5)    justPickedSide = 'blue';
-            else if (i >= 11 && i <= 15) justPickedSide = 'red';
-        }
-
-        if (heroName && !prevName) {
+            // Slot kosong → ada hero (fly-in)
             addHeroImage(container, hero);
+
         } else if (heroName && prevName) {
+            // Hero lama → hero baru (fly-out, lalu fly-in)
             const existing = container.querySelector('img');
             if (existing) {
                 existing.classList.add('fly-out');
@@ -106,7 +91,9 @@ function renderSlots(slots) {
             } else {
                 addHeroImage(container, hero);
             }
+
         } else if (!heroName && prevName) {
+            // Hero → kosong (fly-out, lalu hapus)
             const existing = container.querySelector('img');
             if (existing) {
                 existing.classList.add('fly-out');
@@ -121,30 +108,7 @@ function renderSlots(slots) {
     for (let i = 1; i <= 20; i++) {
         prevSlots[i] = slots[i] ? { ...slots[i] } : null;
     }
-
-    // Update pick indicator jika ada perubahan
-    if (justPickedSide) {
-        updatePickIndicator(justPickedSide);
-    }
 }
-
-// ─── Pick Indicator ───────────────────────────────
-function updatePickIndicator(side) {
-    const arrow = document.getElementById('pickArrow');
-    if (!arrow) return;
-
-    arrow.classList.remove('turn-blue', 'turn-red');
-
-    if (side === 'blue') {
-        // Blue baru pick → giliran Red → arah ke kanan
-        arrow.classList.add('turn-red');
-    } else if (side === 'red') {
-        // Red baru pick → giliran Blue → arah ke kiri
-        arrow.classList.add('turn-blue');
-    }
-    lastPickSide = side;
-}
-
 
 function addHeroImage(container, hero) {
     container.innerHTML = `<img src="${hero.img}" alt="${hero.name}" class="fly-in">`;
@@ -156,20 +120,15 @@ function addHeroImage(container, hero) {
     }
 }
 
-// ─── Team Names (update ban row + center row) ─────────
+// ============================================================
+// RENDER TEAM NAMES
+// ============================================================
 function renderTeamNames(teams) {
-    // Ban row
     const d1 = document.getElementById('teamNameDisplay1');
     const d2 = document.getElementById('teamNameDisplay2');
     if (d1) d1.textContent = teams.blue || 'Blue Side';
     if (d2) d2.textContent = teams.red  || 'Red Side';
-    // Center row
-    const c1 = document.getElementById('teamNameCenter1');
-    const c2 = document.getElementById('teamNameCenter2');
-    if (c1) c1.textContent = teams.blue || 'Blue Side';
-    if (c2) c2.textContent = teams.red  || 'Red Side';
 }
-
 
 // ============================================================
 // RENDER NICKNAMES
@@ -196,15 +155,10 @@ function renderLogos(logos) {
 // ============================================================
 function renderWins(wins) {
     for (let i = 1; i <= 6; i++) {
-        // Cek dua kemungkinan: class wdot-img (display baru) atau extraImage lama
         const el = document.getElementById('extraImage' + i);
-        if (el) {
-            el.style.opacity  = wins[i] ? '1' : '0.15';
-            el.style.filter   = wins[i] ? 'none' : 'grayscale(100%)';
-        }
+        if (el) el.style.display = wins[i] ? 'block' : 'none';
     }
 }
-
 
 // ============================================================
 // RENDER TOURNAMENT NAME
@@ -220,7 +174,7 @@ function renderTournamentName(name) {
 initWebSocket();
 
 // ============================================================
-// COUNTDOWN RENDER LOOP — berjalan tiap 100ms, hitung sisa waktu
+// COUNTDOWN RENDER LOOP — update timer + bars tiap 100ms
 // ============================================================
 setInterval(() => {
     const cd = currentCountdown;
@@ -248,13 +202,18 @@ setInterval(() => {
     const fillR  = document.getElementById('countdownFillRight');
     const dot    = document.getElementById('countdownDot');
 
-    if (timeEl) timeEl.textContent  = timeStr;
-    if (fillL)  fillL.style.width   = percent + '%';
-    if (fillR)  fillR.style.width   = percent + '%';
+    if (timeEl) timeEl.textContent = timeStr;
+    if (fillL)  fillL.style.width  = percent + '%';
+    if (fillR)  fillR.style.width  = percent + '%';
 
-    // Dot berkedip merah saat sisa < 10 detik
+    // Dot urgent berkedip saat < 10 detik
     if (dot) {
-        dot.style.backgroundColor = remainingMs <= 10000 ? '#ff0000' : '#ff2200';
-        dot.style.boxShadow       = remainingMs <= 10000 ? '0 0 10px #ff0000' : '0 0 6px #ff3300';
+        if (remainingMs <= 10000 && cd.running) {
+            dot.classList.add('urgent');
+        } else {
+            dot.classList.remove('urgent');
+            dot.style.backgroundColor = remainingMs <= 10000 ? '#ff0000' : '#ff2200';
+            dot.style.boxShadow       = remainingMs <= 10000 ? '0 0 10px #ff0000' : '0 0 6px #ff3300';
+        }
     }
 }, 100);

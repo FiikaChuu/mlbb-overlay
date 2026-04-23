@@ -3,453 +3,536 @@
     src: url('Assets/Font/BebasNeue-Regular.otf') format('truetype');
     font-weight: normal;
     font-style: normal;
-  }
+}
 
-  /* Menggunakan font di seluruh halaman */
-  body {
+/* Menggunakan font di seluruh halaman */
+body {
     font-family: 'bebas neue', sans-serif;
-    background-color: transparent; /* Transparent untuk overlay vMix — tidak perlu chroma key */
-  }
+    background-color: transparent;
+    /* Transparent untuk overlay vMix — tidak perlu chroma key */
+}
 
 
-/*Display*/
+/* ══════════════════════════════════════════════
+   DISPLAY — BAN ROW
+══════════════════════════════════════════════ */
 
 .ban {
     display: flex;
-    margin-top:20px
+    margin-top: 20px;
+    /* EDIT: jarak ban row dari atas layar */
 }
 
-.teamnameblue{
+/* ── Nama Tim Blue (kiri) ── */
+.teamnameblue {
     width: 300px;
+    /* EDIT: lebar kotak nama tim blue */
     height: 68px;
+    /* EDIT: tinggi kotak nama tim blue */
     text-align: center;
     line-height: 49px;
     background-color: #006bd6;
+    /* EDIT: warna background nama tim blue */
     margin: 1px;
     align-items: center;
     justify-content: center;
-     
 }
 
-.teamnamered{
+/* ── Nama Tim Red (kanan) ── */
+.teamnamered {
     width: 300px;
+    /* EDIT: lebar kotak nama tim red */
     height: 68px;
+    /* EDIT: tinggi kotak nama tim red */
     text-align: center;
     line-height: 49px;
     background-color: #fc0341;
+    /* EDIT: warna background nama tim red */
     margin: 1px;
-    
 }
 
+/* ── Kotak Ban Hero ── */
 .ban1 {
     width: 68px;
+    /* EDIT: lebar satu kotak ban */
     height: 68px;
+    /* EDIT: tinggi satu kotak ban (sama = kotak) */
     background-color: aqua;
     margin: 1px;
+    /* EDIT: jarak antar kotak ban */
     overflow: hidden;
     background-image: url("Assets/Other/ban.png");
     background-position: center;
     background-size: 100%;
+    /* EDIT: ukuran background ban (100% = pas kotak) */
     filter: grayscale(100%);
-   
+    /* EDIT: 0% = warna asli, 100% = hitam-putih */
 }
 
+/* ── Kotak Nama Turnamen (tengah ban row) ── */
 .tournamentname {
-    width: 300px;   
+    width: 300px;
+    /* EDIT: lebar kotak nama turnamen */
     height: 68px;
-    background-color:#9900ff;
-    background-image:url("Assets/Other/Tournamentnamebg.jpg");
+    /* EDIT: tinggi kotak nama turnamen */
+    background-color: #9900ff;
+    background-image: url("Assets/Other/Tournamentnamebg.jpg");
     background-size: 105%;
+    /* EDIT: zoom background gambar (100% = normal) */
     background-position: center;
     margin-top: 1.3px;
     margin-left: 5px;
+    /* EDIT: jarak kiri kotak turnamen */
     margin-right: 5px;
+    /* EDIT: jarak kanan kotak turnamen */
     text-align: center;
     align-items: center;
     justify-content: center;
-    text-align: center;
     overflow: hidden;
-
 }
 
-.tournamentnamemid{
+/* ── Teks nama turnamen di tengah ── */
+.tournamentnamemid {
     font-size: 30px;
-    margin-top: 17px ;
-    font-weight: normal ;
+    /* EDIT: ukuran font nama turnamen */
+    margin-top: 17px;
+    /* EDIT: geser teks ke bawah dalam kotak */
+    font-weight: normal;
     text-align: center;
     align-items: center;
     color: #ffffff;
-    
+    /* EDIT: warna teks nama turnamen */
 }
 
-.tournamentnamebox{
+/* ── Input nama turnamen (di control panel) ── */
+.tournamentnamebox {
     width: 200px;
+    /* EDIT: lebar input box nama turnamen */
     height: 30px;
+    /* EDIT: tinggi input box */
     margin-top: 13px;
     margin-right: 10px;
     margin-left: 10px;
 }
 
-.tournamentinfo{
+
+/* ══════════════════════════════════════════════
+   DISPLAY — PANEL INFO TENGAH (PICK ROW)
+══════════════════════════════════════════════ */
+
+/* ── Panel tengah: logo + VS + win ── */
+.tournamentinfo {
     width: 300px;
+    /* EDIT: lebar panel tengah */
     height: 209.7px;
-    background-color: #9900ff;
-    background-image: url("Assets/Other/Tounamentinfobg.jpg");
+    /* EDIT: tinggi panel tengah (harus sama dengan pick1) */
+    background-color: #ff0000;
+    background-image: url("Assets/Other/pg");
     background-size: 110%;
-    background-position: center;    
+    /* EDIT: zoom background gambar panel tengah */
+    background-position: center;
     margin-left: 5px;
+    /* EDIT: jarak kiri panel tengah */
     margin-right: 5px;
-    /* Flex column agar children tertata vertikal */
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+    /* EDIT: jarak kanan panel tengah */
 }
 
-.tournamentlogo{
+/* ── Logo turnamen (gambar di atas panel tengah) ── */
+.tournamentlogo {
     width: 150px;
+    /* EDIT: lebar area logo turnamen */
     height: 75px;
-    margin-left: 65px ;
-    margin-top: 20px;
+    /* EDIT: tinggi area logo turnamen */
+    margin-left: 65px;
+    /* EDIT: geser logo ke kanan (centering manual) */
+    margin-top: 10px;
+    /* EDIT: jarak logo dari atas panel tengah */
     overflow: hidden;
-    
 }
 
-.logoprop{
-   
+.logoprop {
     justify-content: space-around;
-    width: 150px; /* Lebar gambar */
-    height: 75px; /* Tinggi gambar */
+    width: 150px;
+    /* EDIT: lebar gambar logo turnamen */
+    height: 75px;
+    /* EDIT: tinggi gambar logo turnamen */
     object-fit: contain;
 }
 
-.bluevsred{
+/* ── 1. Container Utama (Logo - Timer - Logo) ── */
+.bluevsred {
     width: 250px;
+    /* Total ruang untuk 3 elemen (83.3 x 3) */
     height: 80px;
-    
     margin-left: 14.4px;
-    margin-top: 10px;
+    /* Sesuaikan dengan desain aslimu */
+    margin-top: 20px;
     display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    /* PAKSA agar tidak turun ke bawah/sebelah doang */
+    justify-content: space-between;
+    align-items: center;
 }
 
-.bluelogo{
+/* ── 2. Kotak Logo Kiri & Kanan ── */
+.bluelogo,
+.redlogo {
     width: 83.3px;
     height: 80px;
-    
-    overflow: hidden;
-}
-
-.vslogo{
-    width: 83.33333333333333px;
-    height: 80px;
-
-    overflow: hidden;
-}
-
-.vsprop{
-    width: 83.33333333333333px;
-    height: 80px;
-    object-fit: contain;
-}
-
-/* ── Countdown seconds display di panel operator (gantikan VS logo) ── */
-.ctrl-countdown-wrap {
-    width: 100%;
-    height: 100%;
+    position: relative;
+    /* KUNCI: Biar bar hijau bisa berpatokan di sini */
+    overflow: visible !important;
+    /* KUNCI: Biar bar hijau di atas tidak kepotong */
     display: flex;
-    align-items: center;
     justify-content: center;
-}
-
-.ctrl-countdown-secs {
-    font-family: 'bebas neue', sans-serif;
-    font-size: 46px;
-    color: #cc0000;
-    text-shadow: 0 0 12px rgba(200, 0, 0, 0.7),
-                 0 2px 4px rgba(0,0,0,0.8);
-    letter-spacing: 2px;
-    line-height: 1;
-    transition: color 0.3s;
-}
-
-/* Warna berubah merah terang saat < 10 detik */
-.ctrl-countdown-secs.urgent {
-    color: #ff0000;
-    text-shadow: 0 0 20px rgba(255, 0, 0, 0.9),
-                 0 0 8px rgba(255, 100, 0, 0.8);
-    animation: pulse-urgent 0.5s ease-in-out infinite alternate;
-}
-
-@keyframes pulse-urgent {
-    from { transform: scale(1);   }
-    to   { transform: scale(1.08); }
-}
-
-
-
-.redlogo{
-    width: 83.33333333333333px;
-    height: 80px;
-   
-    overflow: hidden;
-}
-
-.winlose{
-    width: 250px;
-    height: 10px;
-   
-    margin-left: 14.4px;
-    display: flex;
-}
-
-.w{
-    width: 27px;
-    height: 10px;
-    
-    margin-right: 1px;
-    margin-left: 1px;
-}
-.win1{
-    width: 83.33333px;
-    height: 10px;
-    margin: 1px 1px 1px;
-    display: flex;
-    
-}
-
-.midwin{
-    width: 83.33333px;
-    height: 10px;
-}
-
-/* ════════════════════════════════════════════
-   3-KOLOM TEAMS DISPLAY (sesuai wireframe)
-════════════════════════════════════════════ */
-
-/* Container utama: flex row isi sisa tinggi tournamentinfo */
-.teams-display {
-    display: flex;
-    flex: 1;                /* ambil sisa space setelah logo + countdown */
-    align-items: stretch;
-    min-height: 0;
-}
-
-/* ── Kolom Tim (kiri / kanan) ── */
-.team-col {
-    display: flex;
-    flex-direction: column;
     align-items: center;
-    flex: 1;
-    min-width: 0;
-    padding: 0 2px;
+    flex-shrink: 0;
+    /* Paksa ukuran logo tidak mengecil/hilang */
 }
 
-/* Accent bar hijau di atas logo — sama dengan wireframe */
-.team-accent-bar {
+/* ── 3. Bar Hijau Melayang (DIPISAH KIRI & KANAN BIAR CUSTOM MANUAL) ── */
+
+/* --- SETTING MANUAL BAR TIM KIRI --- */
+.bluelogo .vs-bar-box {
+    position: absolute;
+    /* UBAH ANGKA TOP DI BAWAH INI UNTUK NAIK/TURUN. 
+       Makin kecil minusnya (misal -5px, -2px, 0), makin mepet ke logo */
+    top: -10px;
+    left: -14.6px;
+    /* Ubah ke angka plus misal 5px kalau mau geser ke kanan */
     width: 100%;
-    height: 5px;
-    background: #00cc22;
+    /* Lebar bar kiri */
+    height: 8px;
+    /* Ketebalan bar kiri */
+    background-color: #008000 !important;
+    border-radius: 2px;
+    z-index: 99;
+}
+
+/* --- SETTING MANUAL BAR TIM KANAN --- */
+.redlogo .vs-bar-box {
+    position: absolute;
+    /* UBAH ANGKA TOP DI BAWAH INI UNTUK NAIK/TURUN BAR KANAN */
+    top: -10px;
+    left: 15px;
+    width: 100%;
+    /* Lebar bar kanan */
+    height: 8px;
+    /* Ketebalan bar kanan */
+    background-color: #008000 !important;
+    border-radius: 2px;
+    z-index: 99;
+}
+
+/* Biar fill/isi warnanya ngikutin wadah utamanya */
+.vs-bar-fill {
+    height: 100%;
+    width: 100%;
+    background-color: inherit;
+}
+
+/* ── 4. WADAH TIMER UTAMA (DI TENGAH) ── */
+.vslogo {
+    width: 83.3px;
+    height: 80px;
+    position: relative; /* Kunci biar isi di dalamnya bisa digeser bebas */
+    display: flex;
+    align-items: center;     /* Posisi default rata tengah vertikal */
+    justify-content: center; /* Posisi default rata tengah horizontal */
     flex-shrink: 0;
 }
 
-/* Logo box: rectangle besar, fill penuh lebar kolom */
-.team-logo-box {
-    width: 100%;
-    flex: 1;               /* isi ruang vertikal yang tersedia */
-    min-height: 60px;
-    background: #0000cc;   /* fallback jika gambar belum diupload */
-    overflow: hidden;
+/* ── WADAH ANGKA & TITIK MERAH (CUSTOM MANUAL GESER) ── */
+.vs-timer-num {
+    position: relative;
+    /* UBAH ANGKA DI BAWAH INI UNTUK GESER SELURUH TIMER (ANGKA + TITIK): */
+    top: 0px;  /* Minus (-) untuk naik, Plus (+) untuk turun */
+    left: 0px; /* Minus (-) untuk ke kiri, Plus (+) untuk ke kanan */
+    
     display: flex;
+    flex-direction: column; /* "column" = Titik di atas angka. Ganti jadi "row" kalau mau sebelahan */
     align-items: center;
     justify-content: center;
-    position: relative;
+    
+    /* UBAH INI UNTUK MENGATUR JARAK ANTARA TITIK MERAH DAN ANGKA 60 */
+    gap: 5px; 
 }
 
-.team-logo-full {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+/* ── ANGKA TIMER (60) ── */
+.vs-timer-num span:last-child {
+    font-family: 'bebas neue', sans-serif;
+    /* UBAH INI UNTUK MEMBESARKAN / MENGECILKAN ANGKA */
+    font-size: 32px; 
+    color: #ffffff;
+    line-height: 1;
+    text-shadow: 0px 4px 10px rgba(0, 0, 0, 0.8); /* Biar angka lebih kebaca kalau background terang */
+}
+
+/* ── TITIK MERAH (DOT) ── */
+.vs-dot {
+    /* UBAH INI UNTUK MEMBESARKAN / MENGECILKAN TITIK MERAH */
+    width: 8px;  
+    height: 8px; 
+    background-color: #ff0000;
+    border-radius: 50%; /* Bikin bentuknya bulat sempurna */
     display: block;
 }
 
-/* Nama tim kecil di bawah logo */
-.team-name-bottom {
-    font-family: 'bebas neue', sans-serif;
-    font-size: 13px;
-    color: #ffffff;
-    letter-spacing: 1.5px;
-    text-align: center;
-    text-shadow: 0 0 6px rgba(0,0,0,0.9);
-    padding: 2px 0;
-    width: 100%;
-    flex-shrink: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+/* Animasi saat < 10 detik (Biarkan saja, sudah aman) */
+.vs-dot.urgent {
+    animation: vs-dot-pulse 0.5s ease-in-out infinite alternate;
 }
 
-/* Win dots row di bawah setiap logo */
-.win-dots-row {
+@keyframes vs-dot-pulse {
+    from {
+        transform: scale(1);
+        background: #ff2200;
+    }
+    to {
+        transform: scale(1.4);
+        background: #ff0000;
+        box-shadow: 0 0 10px #ff0000; /* Tambahan efek cahaya biar makin keren pas kedip */
+    }
+}
+
+.vsprop {
+    display: none;
+}
+
+/* ── LOGO TIM DALAM KOTAK (CUSTOM MANUAL GESER) ── */
+.image-container img {
+    /* UBAH INI JIKA LOGO INGIN LEBIH KECIL ATAU BESAR */
+    width: 83.3px;
+    height: 80px;
+    object-fit: contain; /* Menjaga agar logo tidak gepeng */
+    
+    position: relative;
+    /* UBAH ANGKA DI BAWAH INI UNTUK GESER GAMBAR LOGO SAJA: */
+    top: 0px;  /* Geser logo naik/turun */
+    left: 0px; /* Geser logo kiri/kanan */
+}
+
+/* ── Row Win Indicators (bar kecil menang) ── */
+.winlose {
+    width: 250px;
+    /* EDIT: lebar total row win indicator */
+    height: 10px;
+    /* EDIT: tinggi row win indicator */
+    margin-left: 14.4px;
+    /* EDIT: geser row win ke kanan (sama dgn bluevsred) */
     display: flex;
-    gap: 3px;
-    justify-content: center;
-    align-items: center;
-    padding: 3px 2px;
-    flex-shrink: 0;
 }
 
-.wdot {
-    width: 24px;
-    height: 8px;
-    overflow: hidden;
+/* Satu bar menang */
+.w {
+    width: 27px;
+    /* EDIT: lebar satu bar menang */
+    height: 10px;
+    /* EDIT: tinggi satu bar menang */
+    margin-right: 1px;
+    /* EDIT: jarak kanan antar bar */
+    margin-left: 1px;
+    /* EDIT: jarak kiri antar bar */
+}
+
+/* Grup 3 bar (satu sisi tim) */
+.win1 {
+    width: 83.33333px;
+    /* EDIT: lebar satu grup win (1/3 dari winlose) */
+    height: 10px;
+    margin: 1px 1px 1px;
     display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
-.wdot-img {
-    width: 100%;
-    height: 100%;
+/* Spacer tengah win row */
+.midwin {
+    width: 83.33333px;
+    /* EDIT: lebar spacer tengah (sama dgn win1) */
+    height: 10px;
+}
+
+.wimg {
+    width: 27px;
+    /* EDIT: lebar gambar bar menang */
+    height: 10px;
+    /* EDIT: tinggi gambar bar menang */
+    margin-top: -1px;
+}
+
+.wimg img {
+    width: 27px;
+    /* EDIT: sama dgn .wimg */
+    height: 10px;
+}
+
+/* ── Logo tim di panel (control panel preview) ── */
+.image-container img {
+    justify-content: space-around;
+    width: 83.3px;
+    /* EDIT: lebar preview logo tim di control */
+    height: 80px;
+    /* EDIT: tinggi preview logo tim di control */
     object-fit: contain;
 }
 
-/* ── Kolom tengah: pick arrow ── */
-.pick-center-col {
-    width: 42px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding-top: 5px;      /* turun sedikit agar sejajar dengan logo box */
-}
-
-/* ── Pick Indicator Arrow ── */
-.pick-arrow-icon {
-    font-size: 28px;
-    color: #cc0000;
-    display: inline-block;
-    filter: drop-shadow(0 0 8px rgba(200,0,0,0.9));
-    transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
-                color 0.3s ease;
-    transform: translateX(0) rotate(0deg);
-}
-
-/* Blue baru pick → Red's turn → arrow kanan */
-.pick-arrow-icon.turn-red {
-    transform: translateX(8px) rotate(0deg);
-    color: #ff3300;
-}
-
-/* Red baru pick → Blue's turn → arrow kiri */
-.pick-arrow-icon.turn-blue {
-    transform: translateX(-8px) rotate(180deg);
-    color: #ff3300;
+.image-container img:hover {
+    transform: scale(1.05);
+    /* EDIT: zoom saat hover (1.0 = tidak ada efek) */
 }
 
 
-.nickname{
-    display: flex   ;
-}
+/* ══════════════════════════════════════════════
+   DISPLAY — PICK ROW
+══════════════════════════════════════════════ */
 
-.pick{
+.pick {
     display: flex;
 }
 
-.pick1{
+/* ── Kotak Pick Hero ── */
+.pick1 {
     width: 128.4px;
+    /* EDIT: lebar satu kotak pick */
     height: 208.65px;
+    /* EDIT: tinggi satu kotak pick */
     background-color: blueviolet;
     margin: 1px;
+    /* EDIT: jarak antar kotak pick */
     overflow: hidden;
     background-image: url("Assets/Other/Pickbg.jpg");
     background-position: center;
     background-size: 110%;
-    overflow: hidden;
+    /* EDIT: zoom background pick (100% = normal) */
 }
 
-
-
-.nameholder{
-    
+/* ── Bar nama player di bawah pick ── */
+.nameholder {
     position: bottom;
-    width: 128.4 ;
-    height: 20px ;
+    width: 128.4px;
+    height: 20px;
+    /* EDIT: tinggi bar nama player */
     display: flex;
-    justify-content: center; 
+    justify-content: center;
     align-items: center;
     background-color: #272727;
+    /* EDIT: warna background bar nama */
     font-size: 16px;
+    /* EDIT: ukuran font nama player */
     color: #ffffff;
-    
+    /* EDIT: warna teks nama player */
 }
 
-/*Control*/
+/* ── Nama Tim (besar, di ban row) ── */
+.team-name-display {
+    font-size: 50px;
+    /* EDIT: ukuran font nama tim di ban row */
+    font-weight: normal;
+    text-align: center;
+    margin-top: 13px;
+    /* EDIT: jarak teks dari atas kotak */
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    /* EDIT: warna teks nama tim */
+}
+
+.nickname {
+    display: flex;
+}
+
+
+/* ══════════════════════════════════════════════
+   CONTROL PANEL
+══════════════════════════════════════════════ */
 
 .control {
     margin-top: 20px;
+    /* EDIT: jarak control panel dari bawah pick row */
     display: flex;
     margin-right: 10px;
-    
 }
 
-.controlbutton{
+.controlbutton {
     margin-top: 15px;
     margin-right: 10px;
+    /* EDIT: jarak kanan antar tombol kontrol */
     margin-left: 10px;
+    /* EDIT: jarak kiri antar tombol kontrol */
     height: 30px;
+    /* EDIT: tinggi tombol kontrol */
 }
 
-.allcontrol{
+.allcontrol {
     display: flex;
-
 }
 
-.bluesidecontrol{
+/* Kolom Nickname Blue */
+.bluesidecontrol {
     margin-right: 10px;
-
+    /* EDIT: jarak kanan kolom nickname blue */
 }
-.bluesidepick{
+
+/* Kolom Pick Blue */
+.bluesidepick {
     margin-right: 10px;
-}
-.bluesideban{
-    margin-right: 100px; 
+    /* EDIT: jarak kanan kolom pick blue */
 }
 
-.bluelast{
+/* Kolom Ban Blue */
+.bluesideban {
+    margin-right: 100px;
+    /* EDIT: jarak kanan kolom ban blue (spacer ke tengah) */
+}
+
+/* Spacer kiri kolom logo/win blue */
+.bluelast {
     margin-left: 100px;
+    /* EDIT: jarak kiri kolom logo upload blue */
 }
 
-.redsidecontrol{
+/* Kolom Nickname Red */
+.redsidecontrol {
     margin-right: 10px;
+    /* EDIT: jarak kanan kolom nickname red */
 }
 
-.redsidepick{
+/* Kolom Pick Red */
+.redsidepick {
     margin-right: 10px;
+    /* EDIT: jarak kanan kolom pick red */
 }
 
-.bluesideban{
-    margin-right: 100px; 
-}
-
-.redlast{
+/* Spacer kiri kolom logo/win red */
+.redlast {
     margin-left: 100px;
+    /* EDIT: jarak kiri kolom logo upload red */
 }
-/* Dropdown */
+
+
+/* ══════════════════════════════════════════════
+   DROPDOWN
+══════════════════════════════════════════════ */
 
 .dropdown-container {
     position: relative;
     width: 100px;
+    /* EDIT: lebar satu input dropdown hero */
     margin-bottom: 10px;
+    /* EDIT: jarak bawah antar dropdown */
 }
 
 .dropdown {
     width: 100%;
     padding: 8px;
+    /* EDIT: padding dalam input dropdown */
 }
 
 .dropdown-items {
     position: absolute;
     width: 100%;
     max-height: 100px;
+    /* EDIT: tinggi max daftar hero yang muncul */
     overflow-y: auto;
     background-color: #fff;
     border: 1px solid #ccc;
@@ -458,28 +541,37 @@
 
 .dropdown-item {
     padding: 8px;
+    /* EDIT: padding tiap item di daftar */
     cursor: pointer;
 }
 
 .dropdown-item:hover {
     background-color: #f0f0f0;
+    /* EDIT: warna hover item dropdown */
 }
 
-/* Animasi Fly-In dan Fly-Out */
+
+/* ══════════════════════════════════════════════
+   ANIMASI
+══════════════════════════════════════════════ */
+
 .fly-in {
     animation: flyIn 1.5s ease-in-out;
+    /* EDIT: durasi animasi masuk hero (detik) */
 }
 
 .fly-out {
     animation: flyOut 1.2s ease-in-out;
+    /* EDIT: durasi animasi keluar hero (detik) */
 }
 
-/* Keyframes untuk animasi */
 @keyframes flyIn {
     0% {
         opacity: 1;
         transform: translateY(250px);
+        /* EDIT: awal masuk dari bawah (px) */
     }
+
     100% {
         opacity: 1;
         transform: translateX(0);
@@ -491,394 +583,47 @@
         opacity: 1;
         transform: translateX(0);
     }
+
     100% {
         opacity: 1;
         transform: translateY(650px);
+        /* EDIT: akhir keluar ke bawah (px) */
     }
 }
 
-/* Style untuk gambar */
+/* ── Gambar hero di kotak pick/ban ── */
 .image-display img {
     max-width: 100%;
     height: auto;
-    
-    
 }
 
-/*aaa*/
+
+/* ══════════════════════════════════════════════
+   MISC
+══════════════════════════════════════════════ */
+
 .container {
-    
     flex-direction: column;
     align-items: center;
     gap: 20px;
     margin-top: 50px;
+    /* EDIT: jarak atas container logo upload */
 }
-.input-container, .image-container, .button-container, .checkbox-container {
-    
+
+.input-container,
+.image-container,
+.button-container,
+.checkbox-container {
     gap: 20px;
     align-items: center;
 }
-.image-container img {
-    justify-content: space-around;
-    width: 83.3px; /* Lebar gambar */
-    height: 80px; /* Tinggi gambar */
-    object-fit: contain;
-}
 
-.wimg{
-    width: 27px;
-    height: 10px;
-    margin-top: -1px;
-}
-
-.wimg img{
-    width: 27px;
-    height: 10px;
-
-}
-
-.image-container img:hover {
-    transform: scale(1.05);
-}
-.team-name-display {
-    font-size: 50px;
-    font-weight: normal ;
-    text-align: center;
-    margin-top: 13px;
-    align-items: center;
-    justify-content: center;
-    color: #ffffff;
-    
-}
-.input-container input, .button-container button, .checkbox-container label {
+.input-container input,
+.button-container button,
+.checkbox-container label {
     padding: 8px;
     font-size: 10px;
+    /* EDIT: ukuran font checkbox label win */
     border-radius: 4px;
     border: 1px solid #ddd;
 }
-
-/* ── Logo Upload Section ── */
-.logo-upload-section {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 6px 0;
-}
-
-.logo-preview-wrap {
-    flex-shrink: 0;
-}
-
-.logo-preview-img {
-    width: 60px;
-    height: 60px;
-    object-fit: contain;
-    border-radius: 50%;
-    border: 2px solid #555;
-    background: #222;
-    display: block;
-}
-
-.logo-upload-info {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.logo-upload-label {
-    font-size: 11px;
-    font-weight: bold;
-    color: #ccc;
-    letter-spacing: 0.5px;
-}
-
-/* Tombol upload yang terlihat seperti button */
-.logo-upload-btn {
-    display: inline-block;
-    padding: 5px 12px;
-    background: #2a5298;
-    color: #fff;
-    font-size: 12px;
-    font-weight: bold;
-    border-radius: 5px;
-    cursor: pointer;
-    border: none;
-    transition: background 0.2s;
-    text-align: center;
-    user-select: none;
-}
-.logo-upload-btn:hover {
-    background: #3a6bc8;
-}
-
-/* Input nama tim di logo section */
-.logo-upload-info input[type="text"] {
-    padding: 4px 8px;
-    font-size: 12px;
-    border-radius: 4px;
-    border: 1px solid #aaa;
-    width: 110px;
-    box-sizing: border-box;
-}
-
-
-
-/* ══════════════════════════════════════════════════
-   CENTER TOURNAMENT INFO — REDESIGNED
-══════════════════════════════════════════════════ */
-
-/* ── Countdown Bar: full-width rectangle gelap ── */
-.countdown-bar-main {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    height: 26px;
-    background: #0d0d0d;
-    border-top:    1px solid #222;
-    border-bottom: 1px solid #222;
-    box-sizing: border-box;
-    overflow: hidden;
-}
-
-/* Setengah bar kiri & kanan */
-.cdbar-left,
-.cdbar-right {
-    flex: 1;
-    height: 100%;
-    position: relative;
-    overflow: hidden;
-}
-
-/* Fill bar kiri — anchored right, mengecil ke kiri */
-.countdown-fill-left {
-    position: absolute;
-    right: 0; top: 0;
-    height: 100%;
-    width: 100%;
-    background: linear-gradient(to left, #cc1100, #7a0000);
-    transition: width 0.2s linear;
-}
-
-/* Fill bar kanan — anchored left, mengecil ke kanan */
-.countdown-fill-right {
-    position: absolute;
-    left: 0; top: 0;
-    height: 100%;
-    width: 100%;
-    background: linear-gradient(to right, #cc1100, #7a0000);
-    transition: width 0.2s linear;
-}
-
-/* Teks waktu di tengah bar */
-.countdown-center-text {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 0 8px;
-    white-space: nowrap;
-    font-family: 'bebas neue', sans-serif;
-    font-size: 18px;
-    color: #fff;
-    letter-spacing: 2px;
-    min-width: 66px;
-    justify-content: center;
-    position: relative;
-    z-index: 1;
-    text-shadow: 0 0 10px rgba(0,0,0,1);
-}
-
-.countdown-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background-color: #ff2200;
-    box-shadow: 0 0 6px #ff3300;
-    display: inline-block;
-    flex-shrink: 0;
-    transition: background-color 0.3s, box-shadow 0.3s;
-}
-
-/* ── Row Tim (logo + nama + pick indicator) ── */
-.teams-center-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    padding: 5px 6px;
-    box-sizing: border-box;
-    min-height: 58px;
-}
-
-.team-center {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    flex: 1;
-    min-width: 0;
-}
-
-.blue-center { justify-content: flex-start; }
-.red-center  { justify-content: flex-end;   }
-
-/* Logo dalam lingkaran */
-.team-logo-center {
-    width: 46px;
-    height: 46px;
-    object-fit: contain;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.08);
-    border: 2px solid rgba(255,255,255,0.15);
-    flex-shrink: 0;
-}
-
-/* Nama tim di center row */
-.team-name-label {
-    font-family: 'bebas neue', sans-serif;
-    font-size: 21px;
-    color: #ffffff;
-    letter-spacing: 2px;
-    text-shadow: 1px 1px 6px rgba(0,0,0,0.9);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* ── Pick Indicator ── */
-.pick-indicator-wrap {
-    width: 38px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.pick-arrow-icon {
-    font-size: 26px;
-    color: #cc0000;
-    display: inline-block;
-    filter: drop-shadow(0 0 8px rgba(200,0,0,0.9));
-    /* Animasi smooth */
-    transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
-                color 0.3s ease;
-    transform: translateX(0) rotate(0deg);
-}
-
-/* Blue baru pick → giliran Red → arrow ke kanan */
-.pick-arrow-icon.turn-red {
-    transform: translateX(10px) rotate(0deg);
-    color: #ff3300;
-}
-
-/* Red baru pick → giliran Blue → arrow ke kiri (balik) */
-.pick-arrow-icon.turn-blue {
-    transform: translateX(-10px) rotate(180deg);
-    color: #ff3300;
-}
-
-/* ── Kontrol countdown di panel operator ── */
-.countdown-controls {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 10px;
-    margin-left: 10px;
-    flex-wrap: wrap;
-}
-.countdown-controls label {
-    font-size: 13px;
-    font-weight: bold;
-}
-.countdown-controls input[type="number"] {
-    width: 55px;
-    padding: 4px 6px;
-    font-size: 13px;
-    border-radius: 4px;
-    border: 1px solid #aaa;
-}
-
-
-/* ──────────────────────────────────────
-   COUNTDOWN ROW
-────────────────────────────────────── */
-.countdown-row {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    height: 22px;
-    margin-top: 3px;
-    background: transparent;
-}
-
-/* Persegi panjang kiri & kanan */
-.countdown-rect {
-    flex: 1;
-    height: 16px;
-    background-color: #1a1a1a;
-    border: 1px solid #3a3a3a;
-    overflow: hidden;
-    position: relative;
-}
-
-/* Isi bar — depletes as time runs out */
-.countdown-fill-left {
-    position: absolute;
-    right: 0; top: 0;
-    height: 100%;
-    width: 100%;           /* diupdate via JS */
-    background: linear-gradient(to left, #cc0000, #880000);
-    transition: width 0.2s linear;
-}
-.countdown-fill-right {
-    position: absolute;
-    left: 0; top: 0;
-    height: 100%;
-    width: 100%;           /* diupdate via JS */
-    background: linear-gradient(to right, #cc0000, #880000);
-    transition: width 0.2s linear;
-}
-
-/* Tengah: titik merah + angka */
-.countdown-center {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 0 8px;
-    white-space: nowrap;
-    font-family: 'bebas neue', sans-serif;
-    font-size: 18px;
-    color: #ffffff;
-    min-width: 60px;
-    justify-content: center;
-    letter-spacing: 1px;
-}
-
-.countdown-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background-color: #ff2200;
-    box-shadow: 0 0 6px #ff3300;
-    display: inline-block;
-    flex-shrink: 0;
-}
-
-/* Kontrol countdown di panel */
-.countdown-controls {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 10px;
-    margin-left: 10px;
-    flex-wrap: wrap;
-}
-.countdown-controls label {
-    font-size: 13px;
-    font-weight: bold;
-}
-.countdown-controls input[type="number"] {
-    width: 55px;
-    padding: 4px 6px;
-    font-size: 13px;
-    border-radius: 4px;
-    border: 1px solid #aaa;
-}

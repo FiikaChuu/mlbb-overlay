@@ -150,15 +150,6 @@ for (let i = 1; i <= 20; i++) appState.slots[i]     = null;
 for (let i = 1; i <= 10; i++) appState.nicknames[i]  = '';
 for (let i = 1; i <= 6;  i++) appState.wins[i]       = false;
 
-// Countdown state
-appState.countdown = {
-    totalSeconds: 60,
-    startedAt:    null,    // Date.now() saat START ditekan
-    pausedAt:     60000,   // sisa ms saat PAUSE (default = full)
-    running:      false
-};
-
-
 // ============================================================
 // WEBSOCKET CLIENT (Control Panel → Server → Display)
 // Ganti 'localhost' dengan IP PC server jika berbeda jaringan
@@ -244,44 +235,6 @@ function updateHeroImage(hero, id) {
 
     // Update state & kirim ke display
     appState.slots[id] = { name: hero.name, img: hero.img, sound: hero.sound };
-    sendState();
-}
-
-// ============================================================
-// COUNTDOWN CONTROL
-// ============================================================
-function countdownSet() {
-    const val = parseInt(document.getElementById('countdownInput').value);
-    if (isNaN(val) || val < 1) return;
-    appState.countdown = { totalSeconds: val, startedAt: null, pausedAt: val * 1000, running: false };
-    sendState();
-}
-
-function countdownStart() {
-    const cd = appState.countdown;
-    const remainingMs = cd.pausedAt !== null ? cd.pausedAt : cd.totalSeconds * 1000;
-    appState.countdown = {
-        totalSeconds: cd.totalSeconds,
-        startedAt:    Date.now() - (cd.totalSeconds * 1000 - remainingMs),
-        pausedAt:     null,
-        running:      true
-    };
-    sendState();
-}
-
-function countdownPause() {
-    const cd = appState.countdown;
-    let remainingMs = cd.totalSeconds * 1000;
-    if (cd.running && cd.startedAt !== null) {
-        remainingMs = Math.max(0, cd.totalSeconds * 1000 - (Date.now() - cd.startedAt));
-    }
-    appState.countdown = { totalSeconds: cd.totalSeconds, startedAt: null, pausedAt: remainingMs, running: false };
-    sendState();
-}
-
-function countdownReset() {
-    const cd = appState.countdown;
-    appState.countdown = { totalSeconds: cd.totalSeconds, startedAt: null, pausedAt: cd.totalSeconds * 1000, running: false };
     sendState();
 }
 
@@ -470,8 +423,7 @@ tournamentnameInput.addEventListener('input', function() {
 initWebSocket();
 
 // ============================================================
-// COUNTDOWN DISPLAY — update angka detik di panel operator
-// (menampilkan sisa detik di area bekas VS logo, format: "60")
+// COUNTDOWN DISPLAY LOOP — update angka + bar di control panel (tiap 100ms)
 // ============================================================
 setInterval(() => {
     const cd = appState.countdown;
@@ -485,16 +437,31 @@ setInterval(() => {
     }
     remainingMs = Math.max(0, remainingMs);
 
-    const secs = Math.ceil(remainingMs / 1000);
-    const el   = document.getElementById('ctrlCountdownSecs');
-    if (!el) return;
+    const totalMs = cd.totalSeconds * 1000;
+    const percent = totalMs > 0 ? (remainingMs / totalMs) * 100 : 0;
+    const secs    = Math.ceil(remainingMs / 1000);
 
-    el.textContent = secs;
+    // Update angka detik
+    const secsEl = document.getElementById('ctrlCountdownSecs');
+    if (secsEl) secsEl.textContent = secs;
 
-    // Efek urgent saat detik terakhir (< 10)
-    if (secs <= 10 && cd.running) {
-        el.classList.add('urgent');
-    } else {
-        el.classList.remove('urgent');
+    // Update bar kiri & kanan
+    const fillL = document.getElementById('ctrlFillLeft');
+    const fillR = document.getElementById('ctrlFillRight');
+    if (fillL) fillL.style.width = percent + '%';
+    if (fillR) fillR.style.width = percent + '%';
+
+    // Dot: urgent saat < 10 detik dan sedang berjalan
+    const dot = document.getElementById('ctrlDot');
+    if (dot) {
+        if (secs <= 10 && cd.running) {
+            dot.classList.add('urgent');
+            secsEl && secsEl.classList.add('urgent');
+        } else {
+            dot.classList.remove('urgent');
+            secsEl && secsEl.classList.remove('urgent');
+            dot.style.backgroundColor = secs <= 10 ? '#ff0000' : '#ff2200';
+            dot.style.boxShadow       = secs <= 10 ? '0 0 10px #ff0000' : '0 0 6px #ff3300';
+        }
     }
-}, 100);
+}, 100);

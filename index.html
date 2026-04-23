@@ -153,19 +153,27 @@
             <div class="bluevsred">
 
                 <div class="bluelogo">
+                    <div class="vs-bar-box">
+                        <div class="vs-bar-fill vs-bar-fill-left" id="ctrlFillLeft"></div>
+                    </div>
                     <div class="image-container">
                         <img id="image1" src="https://via.placeholder.com/300x200?text=Image+1" alt="Image 1"
                             onclick="swapContent()">
                     </div>
                 </div>
 
-                <div class="vslogo">
-                    <div class="ctrl-countdown-wrap">
+                <!-- Timer menggantikan VS: hanya angka detik -->
+                <div class="vslogo vs-timer-wrap">
+                    <div class="vs-timer-num">
+                        <span class="vs-dot" id="ctrlDot"></span>
                         <span class="ctrl-countdown-secs" id="ctrlCountdownSecs">60</span>
                     </div>
                 </div>
 
                 <div class="redlogo">
+                    <div class="vs-bar-box">
+                        <div class="vs-bar-fill vs-bar-fill-right" id="ctrlFillRight"></div>
+                    </div>
                     <div class="image-container">
                         <img id="image2" src="https://via.placeholder.com/300x200?text=Image+2" alt="Image 2"
                             onclick="swapContent()">
@@ -318,18 +326,10 @@
 
         <!-- Output Box -->
 
+
     </div>
 
-    <!-- Countdown Controls -->
-    <div class="countdown-controls">
-        <label>⏱ COUNTDOWN:</label>
-        <input type="number" id="countdownInput" value="60" min="1" max="999">
-        <span style="font-size:12px">detik</span>
-        <button class="controlbutton" onclick="countdownSet()">Set</button>
-        <button class="controlbutton" id="btnCountdownStart" onclick="countdownStart()">▶ Start</button>
-        <button class="controlbutton" onclick="countdownPause()">⏸ Pause</button>
-        <button class="controlbutton" onclick="countdownReset()">↺ Reset</button>
-    </div>
+
 
     <!-- Input untuk 1-5 -->
 
@@ -537,65 +537,55 @@
 
         <div class="bluelast">
             <div class="container">
+                <!-- Input untuk nama tim -->
+                <div class="input-container">
+                    <input id="team1" type="text" value="" oninput="updateTeamName()">
 
-                <!-- LOGO UPLOAD: Blue Team -->
-                <div class="logo-upload-section">
-                    <div class="logo-preview-wrap">
-                        <img id="image1" class="logo-preview-img"
-                             src="https://placehold.co/70x70/1a3a6e/ffffff?text=B"
-                             alt="Blue Logo">
+                    <div class="input-container">
+                        <input id="file1" type="file" accept="image/*" onchange="loadImage(event, 'image1')">
                     </div>
-                    <div class="logo-upload-info">
-                        <label class="logo-upload-label">&#128247; Upload Logo Blue</label>
-                        <label class="logo-upload-btn" for="file1">Pilih Gambar</label>
-                        <input id="file1" type="file" accept="image/*"
-                               onchange="loadImage(event, 'image1')" style="display:none">
-                        <input id="team1" type="text" value=""
-                               oninput="updateTeamName()"
-                               placeholder="Nama Tim Blue">
+
+                    <div class="checkbox-container">
+                        <h4>Win=Check</h4>
+                        <label><input type="checkbox" id="checkbox1" onclick="toggleImage('extraImage1')"
+                                unchecked>1</label>
+                        <label><input type="checkbox" id="checkbox2" onclick="toggleImage('extraImage2')"
+                                unchecked>2</label>
+                        <label><input type="checkbox" id="checkbox3" onclick="toggleImage('extraImage3')"
+                                unchecked>3</label>
+
                     </div>
-                </div>
 
-                <div class="checkbox-container">
-                    <h4>Win=Check</h4>
-                    <label><input type="checkbox" id="checkbox1" onclick="toggleImage('extraImage1')" unchecked>1</label>
-                    <label><input type="checkbox" id="checkbox2" onclick="toggleImage('extraImage2')" unchecked>2</label>
-                    <label><input type="checkbox" id="checkbox3" onclick="toggleImage('extraImage3')" unchecked>3</label>
                 </div>
-
             </div>
+
         </div>
 
 
         <div class="redlast">
             <div class="container">
+                <!-- Input untuk nama tim -->
+                <div class="input-container">
+                    <input id="team2" type="text" value="" oninput="updateTeamName()">
 
-                <!-- LOGO UPLOAD: Red Team -->
-                <div class="logo-upload-section">
-                    <div class="logo-preview-wrap">
-                        <img id="image2" class="logo-preview-img"
-                             src="https://placehold.co/70x70/6e1a1a/ffffff?text=R"
-                             alt="Red Logo">
+                    <div class="input-container">
+                        <input id="file2" type="file" accept="image/*" onchange="loadImage(event, 'image2')">
                     </div>
-                    <div class="logo-upload-info">
-                        <label class="logo-upload-label">&#128247; Upload Logo Red</label>
-                        <label class="logo-upload-btn" for="file2">Pilih Gambar</label>
-                        <input id="file2" type="file" accept="image/*"
-                               onchange="loadImage(event, 'image2')" style="display:none">
-                        <input id="team2" type="text" value=""
-                               oninput="updateTeamName()"
-                               placeholder="Nama Tim Red">
+
+                    <div class="checkbox-container">
+                        <h4>Win=Check</h4>
+                        <label><input type="checkbox" id="checkbox4" onclick="toggleImage('extraImage4')"
+                                unchecked>1</label>
+                        <label><input type="checkbox" id="checkbox5" onclick="toggleImage('extraImage5')"
+                                unchecked>2</label>
+                        <label><input type="checkbox" id="checkbox6" onclick="toggleImage('extraImage6')"
+                                unchecked>3</label>
+
                     </div>
-                </div>
 
-                <div class="checkbox-container">
-                    <h4>Win=Check</h4>
-                    <label><input type="checkbox" id="checkbox4" onclick="toggleImage('extraImage4')" unchecked>1</label>
-                    <label><input type="checkbox" id="checkbox5" onclick="toggleImage('extraImage5')" unchecked>2</label>
-                    <label><input type="checkbox" id="checkbox6" onclick="toggleImage('extraImage6')" unchecked>3</label>
                 </div>
-
             </div>
+
         </div>
 
     </div>
