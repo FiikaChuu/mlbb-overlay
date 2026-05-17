@@ -1,6 +1,11 @@
 // ============================================================
+// CONFIGURATION: GOOGLE APPS SCRIPT WEB APP URL
+// ============================================================
+// PASTE URL DARI DEPLOYMENT GOOGLE APPS SCRIPT DI SINI
+const GOOGLE_SHEETS_API_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
+
+// ============================================================
 // HERO DATABASE
-// Kolom `sound`: isi path file audio jika ada, atau null jika belum ada
 // ============================================================
 const heroes = [
     { name: 'Aamon',          img: 'Assets/HeroPick/aamon.png',        sound: null },
@@ -133,65 +138,271 @@ const heroes = [
 ];
 
 // ============================================================
-// STATE APLIKASI
-// Semua data di sini yang akan di-sync ke display via WebSocket
+// DRAFT STATE MANAGER
 // ============================================================
-const appState = {
-    slots:         {},   // key: 1-20 → { name, img, sound } atau null
-    teams:         { blue: 'Blue Side', red: 'Red Side' },
-    logos:         { image1: null, image2: null }, // base64 data URL
-    nicknames:     {},   // key: 1-10 → string
-    wins:          {},   // key: 1-6  → boolean
-    tournamentName: ''
+let appState = {
+    match: {
+        tournamentName: 'Tournament Name',
+        bestOf: 3,
+        mode: 'BAN10',
+        firstPick: 'BLUE',
+        currentTurnIndex: 0,
+        phase: 'NOT_STARTED'
+    },
+    teams: {
+        BLUE: { name: 'Blue Side', logo: '', players: ['', '', '', '', ''], score: 0 },
+        RED: { name: 'Red Side', logo: '', players: ['', '', '', '', ''], score: 0 }
+    },
+    draft: {
+        slots: {} // key 1-20 -> hero name
+    }
 };
 
-// Inisialisasi nilai default
-for (let i = 1; i <= 20; i++) appState.slots[i]     = null;
-for (let i = 1; i <= 10; i++) appState.nicknames[i]  = '';
-for (let i = 1; i <= 6;  i++) appState.wins[i]       = false;
+let oldStateStr = "";
+let isUpdating = false;
+let pollingInterval = null;
+
+// Slots map based on UI
+// Blue Picks: 1, 2, 3, 4, 5
+// Blue Bans: 6, 7, 8, 9, 10
+// Red Picks: 11, 12, 13, 14, 15
+// Red Bans: 16, 17, 18, 19, 20
+
+// Draft Logic Orders mapping to slots
+function getDraftOrder() {
+    const fp = appState.match.firstPick; 
+    const sp = fp === 'BLUE' ? 'RED' : 'BLUE'; 
+    
+    // Map side + role + internal slot (1-5) to absolute UI slot (1-20)
+    const getUI = (side, type, s) => {
+        if(side === 'BLUE' && type === 'PICK') return s;
+        if(side === 'BLUE' && type === 'BAN') return s + 5;
+        if(side === 'RED' && type === 'PICK') return s + 10;
+        if(side === 'RED' && type === 'BAN') return s + 15;
+    };
+
+    if (appState.match.mode === 'BAN10') {
+        return [
+            { type: 'BAN', side: fp, slot: getUI(fp, 'BAN', 1) },
+            { type: 'BAN', side: sp, slot: getUI(sp, 'BAN', 1) },
+            { type: 'BAN', side: fp, slot: getUI(fp, 'BAN', 2) },
+            { type: 'BAN', side: sp, slot: getUI(sp, 'BAN', 2) },
+            { type: 'BAN', side: fp, slot: getUI(fp, 'BAN', 3) },
+            { type: 'BAN', side: sp, slot: getUI(sp, 'BAN', 3) },
+            
+            { type: 'PICK', side: fp, slot: getUI(fp, 'PICK', 1) },
+            { type: 'PICK', side: sp, slot: getUI(sp, 'PICK', 1) },
+            { type: 'PICK', side: sp, slot: getUI(sp, 'PICK', 2) },
+            { type: 'PICK', side: fp, slot: getUI(fp, 'PICK', 2) },
+            { type: 'PICK', side: fp, slot: getUI(fp, 'PICK', 3) },
+            { type: 'PICK', side: sp, slot: getUI(sp, 'PICK', 3) },
+            
+            { type: 'BAN', side: sp, slot: getUI(sp, 'BAN', 4) },
+            { type: 'BAN', side: fp, slot: getUI(fp, 'BAN', 4) },
+            { type: 'BAN', side: sp, slot: getUI(sp, 'BAN', 5) },
+            { type: 'BAN', side: fp, slot: getUI(fp, 'BAN', 5) },
+            
+            { type: 'PICK', side: sp, slot: getUI(sp, 'PICK', 4) },
+            { type: 'PICK', side: fp, slot: getUI(fp, 'PICK', 4) },
+            { type: 'PICK', side: fp, slot: getUI(fp, 'PICK', 5) },
+            { type: 'PICK', side: sp, slot: getUI(sp, 'PICK', 5) }
+        ];
+    } else { // BAN5
+        return [
+            { type: 'BAN', side: fp, slot: getUI(fp, 'BAN', 1) },
+            { type: 'BAN', side: sp, slot: getUI(sp, 'BAN', 1) },
+            { type: 'BAN', side: fp, slot: getUI(fp, 'BAN', 2) },
+            { type: 'BAN', side: sp, slot: getUI(sp, 'BAN', 2) },
+            { type: 'BAN', side: fp, slot: getUI(fp, 'BAN', 3) },
+            { type: 'BAN', side: sp, slot: getUI(sp, 'BAN', 3) },
+            { type: 'BAN', side: fp, slot: getUI(fp, 'BAN', 4) },
+            { type: 'BAN', side: sp, slot: getUI(sp, 'BAN', 4) },
+            { type: 'BAN', side: fp, slot: getUI(fp, 'BAN', 5) },
+            { type: 'BAN', side: sp, slot: getUI(sp, 'BAN', 5) },
+            
+            { type: 'PICK', side: fp, slot: getUI(fp, 'PICK', 1) },
+            { type: 'PICK', side: sp, slot: getUI(sp, 'PICK', 1) },
+            { type: 'PICK', side: sp, slot: getUI(sp, 'PICK', 2) },
+            { type: 'PICK', side: fp, slot: getUI(fp, 'PICK', 2) },
+            { type: 'PICK', side: fp, slot: getUI(fp, 'PICK', 3) },
+            { type: 'PICK', side: sp, slot: getUI(sp, 'PICK', 3) },
+            { type: 'PICK', side: sp, slot: getUI(sp, 'PICK', 4) },
+            { type: 'PICK', side: fp, slot: getUI(fp, 'PICK', 4) },
+            { type: 'PICK', side: fp, slot: getUI(fp, 'PICK', 5) },
+            { type: 'PICK', side: sp, slot: getUI(sp, 'PICK', 5) }
+        ];
+    }
+}
+
+function isHeroAvailable(heroName) {
+    for (let i = 1; i <= 20; i++) {
+        if (appState.draft.slots[i] === heroName) return false;
+    }
+    return true;
+}
+
+function getCurrentTurnSlot() {
+    const order = getDraftOrder();
+    if (appState.match.currentTurnIndex < order.length) {
+        return order[appState.match.currentTurnIndex].slot;
+    }
+    return null; // finished
+}
 
 // ============================================================
-// WEBSOCKET CLIENT (Control Panel → Server → Display)
-// Ganti 'localhost' dengan IP PC server jika berbeda jaringan
+// REALTIME SYNC (POLLING & PUSH)
 // ============================================================
-const WS_URL = 'ws://localhost:3000';
-let wsClient = null;
-
-function initWebSocket() {
+async function fetchState() {
+    if (isUpdating || GOOGLE_SHEETS_API_URL === "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL") return;
     try {
-        wsClient = new WebSocket(WS_URL);
-
-        wsClient.onopen = () => {
-            console.log('✅ Control terhubung ke WebSocket server');
-            sendState(); // Kirim state awal saat connect
-        };
-
-        wsClient.onclose = () => {
-            console.warn('⚠️ WebSocket terputus, reconnect dalam 3 detik...');
-            setTimeout(initWebSocket, 3000);
-        };
-
-        wsClient.onerror = () => {
-            // Ditangani oleh onclose
-        };
-
+        const response = await fetch(GOOGLE_SHEETS_API_URL);
+        const data = await response.json();
+        
+        const newStateStr = JSON.stringify(data);
+        if (newStateStr !== oldStateStr) {
+            updateDOM(data);
+            appState = JSON.parse(newStateStr);
+            oldStateStr = newStateStr;
+        }
     } catch (e) {
-        console.warn('WebSocket tidak bisa connect, pastikan server.js berjalan');
-        setTimeout(initWebSocket, 5000);
+        console.warn("Polling error:", e);
     }
 }
 
-function sendState() {
-    if (wsClient && wsClient.readyState === WebSocket.OPEN) {
-        wsClient.send(JSON.stringify({ type: 'update', data: appState }));
+async function pushState() {
+    if (GOOGLE_SHEETS_API_URL === "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL") {
+        console.warn("API URL not configured. Local state updated only.");
+        updateDOM(appState);
+        return;
+    }
+
+    isUpdating = true;
+    try {
+        await fetch(GOOGLE_SHEETS_API_URL, {
+            method: 'POST',
+            body: JSON.stringify(appState),
+            headers: { 'Content-Type': 'application/json' }
+        });
+        oldStateStr = JSON.stringify(appState);
+        updateDOM(appState);
+    } catch (e) {
+        console.error("Push state error:", e);
+    }
+    isUpdating = false;
+}
+
+function startPolling() {
+    fetchState();
+    pollingInterval = setInterval(fetchState, 2000);
+}
+
+// ============================================================
+// SMART DOM UPDATE
+// ============================================================
+function updateDOM(newState) {
+    // 1. MATCH INFO
+    document.getElementById('tournamentnameOutput').textContent = newState.match.tournamentName || '';
+    document.getElementById('tournamentnamemid').value = newState.match.tournamentName || '';
+
+    // 2. TEAM NAMES
+    document.getElementById('teamNameDisplay1').textContent = newState.teams.BLUE.name || 'Blue Side';
+    document.getElementById('teamNameDisplay2').textContent = newState.teams.RED.name || 'Red Side';
+    document.getElementById('team1').value = newState.teams.BLUE.name || '';
+    document.getElementById('team2').value = newState.teams.RED.name || '';
+
+    // 3. TEAM LOGOS
+    if (newState.teams.BLUE.logo) document.getElementById('image1').src = newState.teams.BLUE.logo;
+    if (newState.teams.RED.logo) document.getElementById('image2').src = newState.teams.RED.logo;
+
+    // 4. PLAYERS NICKNAME
+    for (let i = 0; i < 5; i++) {
+        // Blue
+        document.getElementById(`output${i + 1}`).textContent = newState.teams.BLUE.players[i] || '';
+        document.getElementById(`input${i + 1}`).value = newState.teams.BLUE.players[i] || '';
+        // Red
+        document.getElementById(`output${i + 6}`).textContent = newState.teams.RED.players[i] || '';
+        document.getElementById(`input${i + 6}`).value = newState.teams.RED.players[i] || '';
+    }
+
+    // 5. WINS / SCORES
+    const winsReq = Math.ceil(newState.match.bestOf / 2);
+    for (let i = 1; i <= 3; i++) {
+        const blueEl = document.getElementById(`extraImage${i}`);
+        const redEl = document.getElementById(`extraImage${i + 3}`);
+        const blueCb = document.getElementById(`checkbox${i}`);
+        const redCb = document.getElementById(`checkbox${i + 3}`);
+        
+        // Hide if beyond BO limit
+        if (i > winsReq) {
+            if (blueEl) blueEl.style.display = 'none';
+            if (redEl) redEl.style.display = 'none';
+            if (blueCb) blueCb.parentElement.style.display = 'none';
+            if (redCb) redCb.parentElement.style.display = 'none';
+        } else {
+            if (blueCb) blueCb.parentElement.style.display = 'inline-block';
+            if (redCb) redCb.parentElement.style.display = 'inline-block';
+            
+            const blueWon = i <= newState.teams.BLUE.score;
+            const redWon = i <= newState.teams.RED.score;
+            
+            if (blueEl) blueEl.style.display = blueWon ? 'block' : 'none';
+            if (redEl) redEl.style.display = redWon ? 'block' : 'none';
+            if (blueCb) blueCb.checked = blueWon;
+            if (redCb) redCb.checked = redWon;
+        }
+    }
+
+    // 6. HERO SLOTS
+    const currentSlot = getCurrentTurnSlot(); // active slot for animation / logic
+    
+    for (let i = 1; i <= 20; i++) {
+        const heroName = newState.draft.slots[i];
+        const container = document.getElementById(`image-display-${i}`);
+        const searchInput = document.getElementById(`search-${i}`);
+        
+        if (!container) continue;
+
+        if (heroName) {
+            const hObj = heroes.find(h => h.name === heroName);
+            if (hObj) {
+                // If it wasn't there before, add it
+                if (!container.querySelector(`img[alt="${heroName}"]`)) {
+                    container.innerHTML = `<img src="${hObj.img}" alt="${hObj.name}" class="fly-in">`;
+                    if (searchInput) searchInput.value = hObj.name;
+                    // Play sound if UI user picked it just now
+                    // if (hObj.sound) new Audio(hObj.sound).play().catch(()=>{});
+                }
+            }
+        } else {
+            container.innerHTML = '';
+            if (searchInput) searchInput.value = '';
+        }
+
+        // Disable input based on turn
+        if (searchInput) {
+            if (heroName) {
+                searchInput.disabled = true;
+            } else {
+                searchInput.disabled = (currentSlot !== i);
+            }
+        }
     }
 }
 
 // ============================================================
-// DROPDOWN FILTER
+// UI ACTIONS (TRIGGERED BY OPERATOR)
 // ============================================================
-function filterDropdown(id) {
-    const searchInput  = document.getElementById(`search-${id}`).value.toLowerCase();
+
+// HERO DROPDOWN LOGIC
+window.filterDropdown = function(id) {
+    // Prevent filtering if not active turn
+    if (getCurrentTurnSlot() !== id && appState.draft.slots[id] == null) {
+        alert("Bukan giliran slot ini!");
+        document.getElementById(`search-${id}`).value = '';
+        return;
+    }
+
+    const searchInput = document.getElementById(`search-${id}`).value.toLowerCase();
     const dropdownItems = document.getElementById(`dropdown-items-${id}`);
     dropdownItems.innerHTML = '';
 
@@ -201,267 +412,156 @@ function filterDropdown(id) {
             const item = document.createElement('div');
             item.classList.add('dropdown-item');
             item.textContent = hero.name;
-            item.onclick = () => selectHero(hero, id);
+            
+            if (!isHeroAvailable(hero.name)) {
+                item.style.opacity = "0.5";
+                item.style.cursor = "not-allowed";
+                item.textContent += " (Locked)";
+            } else {
+                item.onclick = () => selectHero(hero, id);
+            }
             dropdownItems.appendChild(item);
         });
 }
 
-// ============================================================
-// HERO SELECTION
-// ============================================================
 function selectHero(hero, id) {
-    const imageDisplay = document.getElementById(`image-display-${id}`);
-    const existingImage = imageDisplay.querySelector('img');
+    if (!isHeroAvailable(hero.name)) return;
+    
+    // Validasi turn
+    if (getCurrentTurnSlot() !== id) return;
 
-    if (existingImage) {
-        existingImage.classList.add('fly-out');
-        setTimeout(() => updateHeroImage(hero, id), 500);
+    appState.draft.slots[id] = hero.name;
+    appState.match.currentTurnIndex++;
+    
+    if (appState.match.currentTurnIndex >= getDraftOrder().length) {
+        appState.match.phase = 'FINISHED';
     } else {
-        updateHeroImage(hero, id);
+        appState.match.phase = 'ONGOING';
     }
-}
 
-function updateHeroImage(hero, id) {
-    const imageDisplay = document.getElementById(`image-display-${id}`);
-    imageDisplay.innerHTML = `<img src="${hero.img}" alt="${hero.name}" class="fly-in">`;
-    document.getElementById(`search-${id}`).value = hero.name;
-    document.getElementById(`dropdown-items-${id}`).innerHTML = '';
-
-    // Play suara hero jika tersedia
+    // Play sound locally
     if (hero.sound) {
-        const audio = new Audio(hero.sound);
-        audio.play().catch(() => {});
+        new Audio(hero.sound).play().catch(() => {});
     }
 
-    // Update state & kirim ke display
-    appState.slots[id] = { name: hero.name, img: hero.img, sound: hero.sound };
-    sendState();
+    document.getElementById(`dropdown-items-${id}`).innerHTML = '';
+    pushState();
 }
 
-// ============================================================
-// RESET
-// ============================================================
-function resetAllDropdowns() {
-    for (let i = 1; i <= 20; i++) {
-        const imageDisplay = document.getElementById(`image-display-${i}`);
-        const img = imageDisplay.querySelector('img');
-        if (img) img.classList.add('fly-out');
-
-        setTimeout(() => {
-            document.getElementById(`search-${i}`).value = '';
-            imageDisplay.innerHTML = '';
-            document.getElementById(`dropdown-items-${i}`).innerHTML = '';
-        }, 500);
-
-        appState.slots[i] = null;
+// MATCH / NICKNAME UPDATES
+window.updateOutput = function() {
+    for (let i = 0; i < 5; i++) {
+        appState.teams.BLUE.players[i] = document.getElementById(`input${i + 1}`).value;
+        appState.teams.RED.players[i] = document.getElementById(`input${i + 6}`).value;
     }
-    sendState();
+    pushState();
 }
 
-// ============================================================
-// NICKNAME
-// ============================================================
-function updateOutput() {
-    for (let i = 1; i <= 10; i++) {
-        const val = document.getElementById('input' + i).value;
-        document.getElementById('output' + i).textContent = ` ${val}`;
-        appState.nicknames[i] = val;
+window.updateTeamName = function() {
+    appState.teams.BLUE.name = document.getElementById('team1').value;
+    appState.teams.RED.name = document.getElementById('team2').value;
+    pushState();
+}
+
+document.getElementById('tournamentnamemid').addEventListener('input', function() {
+    appState.match.tournamentName = this.value;
+    pushState();
+});
+
+window.toggleImage = function(imageId) {
+    const idx = parseInt(imageId.replace('extraImage', ''));
+    const checkbox = document.getElementById('checkbox' + idx);
+    
+    if (idx <= 3) {
+        appState.teams.BLUE.score = countWins(1, 3);
+    } else {
+        appState.teams.RED.score = countWins(4, 6);
     }
-    sendState();
+    pushState();
 }
 
-function resetInputs() {
-    for (let i = 1; i <= 10; i++) {
-        document.getElementById('input' + i).value = '';
-        document.getElementById('output' + i).textContent = ' ';
-        appState.nicknames[i] = '';
+function countWins(startIdx, endIdx) {
+    let score = 0;
+    for (let i = startIdx; i <= endIdx; i++) {
+        if (document.getElementById('checkbox' + i).checked) score++;
     }
-    sendState();
+    return score;
 }
 
-function switchInputs() {
-    for (let i = 1; i <= 5; i++) {
-        const temp = document.getElementById('input' + i).value;
-        document.getElementById('input' + i).value = document.getElementById('input' + (i + 5)).value;
-        document.getElementById('input' + (i + 5)).value = temp;
-    }
-    updateOutput(); // sudah include sendState
-}
-
-// ============================================================
-// TEAM INFO
-// ============================================================
-function swapContent() {
-    const img1 = document.getElementById('image1');
-    const img2 = document.getElementById('image2');
-    const tempSrc = img1.src;
-    img1.src = img2.src;
-    img2.src = tempSrc;
-
-    const tempLogo = appState.logos.image1;
-    appState.logos.image1 = appState.logos.image2;
-    appState.logos.image2 = tempLogo;
-
-    const d1 = document.getElementById('teamNameDisplay1');
-    const d2 = document.getElementById('teamNameDisplay2');
-    const tempName = d1.textContent;
-    d1.textContent = d2.textContent;
-    d2.textContent = tempName;
-
-    sendState();
-}
-
-function loadImage(event, imgId) {
-    const img  = document.getElementById(imgId);
+// LOGO UPLOAD (CONVERT TO BASE64 AND SAVE TO STATE)
+window.loadImage = function(event, imgId) {
     const file = event.target.files[0];
     if (!file) return;
 
-    // Konversi ke base64 agar bisa dikirim via WebSocket ke display
     const reader = new FileReader();
     reader.onload = function(e) {
-        img.src = e.target.result;
-        appState.logos[imgId] = e.target.result;
-        sendState();
+        if (imgId === 'image1') appState.teams.BLUE.logo = e.target.result;
+        if (imgId === 'image2') appState.teams.RED.logo = e.target.result;
+        pushState();
     };
     reader.readAsDataURL(file);
 }
 
-function updateTeamName() {
-    const t1 = document.getElementById('team1').value;
-    const t2 = document.getElementById('team2').value;
-    document.getElementById('teamNameDisplay1').textContent = t1 || 'Blue Side';
-    document.getElementById('teamNameDisplay2').textContent = t2 || 'Red Side';
-    appState.teams.blue = t1 || 'Blue Side';
-    appState.teams.red  = t2 || 'Red Side';
-    sendState();
-}
-
-function resetContent() {
-    document.getElementById('team1').value = '';
-    document.getElementById('team2').value = '';
-    document.getElementById('teamNameDisplay1').textContent = 'Blue Side';
-    document.getElementById('teamNameDisplay2').textContent = 'Red Side';
-    appState.teams = { blue: 'Blue Side', red: 'Red Side' };
-
-    document.getElementById('image1').src = 'https://via.placeholder.com/300x200?text=Image+1';
-    document.getElementById('image2').src = 'https://via.placeholder.com/300x200?text=Image+2';
-    document.getElementById('file1').value = '';
-    document.getElementById('file2').value = '';
-    appState.logos = { image1: null, image2: null };
-
-    for (let i = 1; i <= 6; i++) {
-        document.getElementById('checkbox' + i).checked = false;
-        document.getElementById('extraImage' + i).style.display = 'block';
-        appState.wins[i] = false;
-    }
-    sendState();
-}
-
-function toggleImage(imageId) {
-    const idx      = parseInt(imageId.replace('extraImage', ''));
-    const image    = document.getElementById(imageId);
-    const checkbox = document.getElementById('checkbox' + idx);
-    image.style.display  = checkbox.checked ? 'block' : 'none';
-    appState.wins[idx]   = checkbox.checked;
-    sendState();
-}
-
-function switchAll() {
-    // Swap nama tim
-    const t1 = document.getElementById('team1');
-    const t2 = document.getElementById('team2');
-    const tempName = t1.value;
-    t1.value = t2.value;
-    t2.value = tempName;
-    updateTeamName(); // include sendState
-
-    // Swap logo visual
-    const img1 = document.getElementById('image1');
-    const img2 = document.getElementById('image2');
-    const tempSrc = img1.src;
-    img1.src = img2.src;
-    img2.src = tempSrc;
-
-    const tempLogo = appState.logos.image1;
-    appState.logos.image1 = appState.logos.image2;
-    appState.logos.image2 = tempLogo;
-
-    // Swap checkbox & wins
-    for (let i = 1; i <= 3; i++) {
-        const cbA  = document.getElementById('checkbox' + i);
-        const cbB  = document.getElementById('checkbox' + (i + 3));
-        const imgA = document.getElementById('extraImage' + i);
-        const imgB = document.getElementById('extraImage' + (i + 3));
-
-        const tempChecked = cbA.checked;
-        cbA.checked = cbB.checked;
-        cbB.checked = tempChecked;
-
-        imgA.style.display  = cbA.checked ? 'block' : 'none';
-        imgB.style.display  = cbB.checked ? 'block' : 'none';
-        appState.wins[i]     = cbA.checked;
-        appState.wins[i + 3] = cbB.checked;
-    }
-    sendState();
-}
-
 // ============================================================
-// TOURNAMENT NAME
+// SYSTEM CONTROLS
 // ============================================================
-const tournamentnameInput  = document.getElementById('tournamentnamemid');
-const tournamentnameOutput = document.getElementById('tournamentnameOutput');
+window.resetAllDropdowns = function() {
+    appState.draft.slots = {};
+    appState.match.currentTurnIndex = 0;
+    appState.match.phase = 'NOT_STARTED';
+    pushState();
+}
 
-tournamentnameInput.addEventListener('input', function() {
-    tournamentnameOutput.textContent = tournamentnameInput.value;
-    appState.tournamentName = tournamentnameInput.value;
-    sendState();
+window.resetInputs = function() {
+    appState.teams.BLUE.players = ['', '', '', '', ''];
+    appState.teams.RED.players = ['', '', '', '', ''];
+    pushState();
+}
+
+window.switchInputs = function() {
+    const temp = [...appState.teams.BLUE.players];
+    appState.teams.BLUE.players = [...appState.teams.RED.players];
+    appState.teams.RED.players = temp;
+    pushState();
+}
+
+window.switchAll = function() {
+    // Swap Teams completely
+    const tempTeam = JSON.parse(JSON.stringify(appState.teams.BLUE));
+    appState.teams.BLUE = JSON.parse(JSON.stringify(appState.teams.RED));
+    appState.teams.RED = tempTeam;
+
+    // Swap First Pick
+    appState.match.firstPick = (appState.match.firstPick === 'BLUE') ? 'RED' : 'BLUE';
+    
+    pushState();
+}
+
+window.resetContent = function() {
+    // Full Reset
+    appState.match = {
+        tournamentName: '',
+        bestOf: 3,
+        mode: 'BAN10',
+        firstPick: 'BLUE',
+        currentTurnIndex: 0,
+        phase: 'NOT_STARTED'
+    };
+    appState.teams = {
+        BLUE: { name: 'Blue Side', logo: '', players: ['', '', '', '', ''], score: 0 },
+        RED: { name: 'Red Side', logo: '', players: ['', '', '', '', ''], score: 0 }
+    };
+    appState.draft.slots = {};
+    pushState();
+}
+
+// Hides dropdown when clicked outside
+document.addEventListener('click', function(e) {
+    if (!e.target.classList.contains('dropdown')) {
+        const items = document.querySelectorAll('.dropdown-items');
+        items.forEach(el => el.innerHTML = '');
+    }
 });
 
-// ============================================================
-// START — inisialisasi WebSocket saat halaman dimuat
-// ============================================================
-initWebSocket();
-
-// ============================================================
-// COUNTDOWN DISPLAY LOOP — update angka + bar di control panel (tiap 100ms)
-// ============================================================
-setInterval(() => {
-    const cd = appState.countdown;
-    if (!cd) return;
-
-    let remainingMs;
-    if (cd.running && cd.startedAt !== null) {
-        remainingMs = (cd.totalSeconds * 1000) - (Date.now() - cd.startedAt);
-    } else {
-        remainingMs = cd.pausedAt !== null ? cd.pausedAt : cd.totalSeconds * 1000;
-    }
-    remainingMs = Math.max(0, remainingMs);
-
-    const totalMs = cd.totalSeconds * 1000;
-    const percent = totalMs > 0 ? (remainingMs / totalMs) * 100 : 0;
-    const secs    = Math.ceil(remainingMs / 1000);
-
-    // Update angka detik
-    const secsEl = document.getElementById('ctrlCountdownSecs');
-    if (secsEl) secsEl.textContent = secs;
-
-    // Update bar kiri & kanan
-    const fillL = document.getElementById('ctrlFillLeft');
-    const fillR = document.getElementById('ctrlFillRight');
-    if (fillL) fillL.style.width = percent + '%';
-    if (fillR) fillR.style.width = percent + '%';
-
-    // Dot: urgent saat < 10 detik dan sedang berjalan
-    const dot = document.getElementById('ctrlDot');
-    if (dot) {
-        if (secs <= 10 && cd.running) {
-            dot.classList.add('urgent');
-            secsEl && secsEl.classList.add('urgent');
-        } else {
-            dot.classList.remove('urgent');
-            secsEl && secsEl.classList.remove('urgent');
-            dot.style.backgroundColor = secs <= 10 ? '#ff0000' : '#ff2200';
-            dot.style.boxShadow       = secs <= 10 ? '0 0 10px #ff0000' : '0 0 6px #ff3300';
-        }
-    }
-}, 100);
+// START
+startPolling();

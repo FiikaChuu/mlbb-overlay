@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Draft Pick Logic Tester</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f9; }
+        .grid { display: flex; gap: 20px; }
+        .col { flex: 1; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .hero-list { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+        .hero-btn { padding: 5px 10px; border: 1px solid #ccc; cursor: pointer; border-radius: 4px; background: #fff;}
+        .hero-btn:hover { background: #e0e0e0; }
+        .hero-btn.disabled { opacity: 0.5; cursor: not-allowed; background: #ffcccc; border-color: red;}
+        .slot { border: 1px dashed #ccc; padding: 5px; margin-bottom: 5px; min-height: 20px; font-size: 14px;}
+        .active-turn { background: #ffff99; font-weight: bold; border: 2px solid #ffcc00;}
+        
+        .blue-side { border-top: 4px solid blue; }
+        .red-side { border-top: 4px solid red; }
+        .info-panel { border-top: 4px solid green; }
+        
+        .win-box { display: inline-block; width: 20px; height: 20px; border: 1px solid #000; margin-right: 5px; cursor: pointer;}
+        .win-box.filled { background: green; }
+        
+        button { padding: 8px 12px; margin: 2px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h1>Draft Pick System (Logic Only)</h1>
+    
+    <div class="grid">
+        <div class="col info-panel">
+            <h3>Match Settings</h3>
+            <label>Mode: 
+                <select id="modeSelect" onchange="changeMode()">
+                    <option value="BAN10">Tournament Ban 10</option>
+                    <option value="BAN5">Tournament Ban 5</option>
+                </select>
+            </label>
+            <br><br>
+            <label>First Pick: 
+                <select id="fpSelect" onchange="changeFP()">
+                    <option value="BLUE">Blue Side</option>
+                    <option value="RED">Red Side</option>
+                </select>
+            </label>
+            <br><br>
+            <label>Best of (BO): 
+                <select id="boSelect" onchange="changeBO()">
+                    <option value="1">BO1</option>
+                    <option value="3" selected>BO3</option>
+                    <option value="5">BO5</option>
+                    <option value="7">BO7</option>
+                </select>
+            </label>
+            <br><br>
+            <button onclick="dm.switchSide(); render();">Switch Side Names & Score</button>
+            <br><br>
+            <button onclick="dm.startDraft(); render();" style="background:#ccffcc">START DRAFT</button>
+            <button onclick="dm.undoLastTurn(); render();">UNDO</button>
+            <button onclick="dm.resetDraft(); render();" style="background:#ffcccc">RESET DRAFT</button>
+            
+            <hr>
+            <h3>Current State</h3>
+            <p><strong>Phase:</strong> <span id="phaseTxt">NOT_STARTED</span></p>
+            <p><strong>Turn:</strong> <span id="turnTxt">-</span></p>
+            
+            <hr>
+            <h3>Hero Pool</h3>
+            <div id="heroPool" class="hero-list"></div>
+        </div>
+
+        <!-- BLUE SIDE -->
+        <div class="col blue-side">
+            <h2 id="blueName">Blue Side</h2>
+            <div>Wins: <span id="blueWins"></span></div>
+            
+            <h3>Bans</h3>
+            <div id="blueBans"></div>
+            
+            <h3>Picks</h3>
+            <div id="bluePicks"></div>
+        </div>
+
+        <!-- RED SIDE -->
+        <div class="col red-side">
+            <h2 id="redName">Red Side</h2>
+            <div>Wins: <span id="redWins"></span></div>
+            
+            <h3>Bans</h3>
+            <div id="redBans"></div>
+            
+            <h3>Picks</h3>
+            <div id="redPicks"></div>
+        </div>
+    </div>
+
+    <script src="draft_logic.js"></script>
+    <script>
+        const dm = new DraftManager();
+
+        function changeMode() {
+            const m = document.getElementById("modeSelect").value;
+            if(!dm.setMode(m)) {
+                alert("Cannot change mode after draft started!");
+                document.getElementById("modeSelect").value = dm.MatchState.mode;
+            }
+            render();
+        }
+
+        function changeFP() {
+            const fp = document.getElementById("fpSelect").value;
+            if(!dm.setFirstPick(fp)) {
+                alert("Cannot change First Pick after draft started!");
+                document.getElementById("fpSelect").value = dm.MatchState.firstPick;
+            }
+            render();
+        }
+
+        function changeBO() {
+            const bo = parseInt(document.getElementById("boSelect").value);
+            dm.setBestOf(bo);
+            render();
+        }
+
+        function toggleWin(side, winIdx) {
+            // Simple logic: click to toggle win counter
+            let current = dm.TeamState[side].score;
+            if(current === winIdx + 1) dm.updateTeamScore(side, winIdx); // uncheck
+            else dm.updateTeamScore(side, winIdx + 1); // check
+            render();
+        }
+
+        function pickHero(hero) {
+            if (dm.selectHero(hero)) {
+                render();
+            } else {
+                alert("Hero tidak bisa dipick/ban saat ini.");
+            }
+        }
+
+        function render() {
+            // Update States Text
+            document.getElementById('phaseTxt').innerText = dm.MatchState.phase;
+            const currentTurn = dm.getCurrentTurn();
+            if (currentTurn) {
+                document.getElementById('turnTxt').innerText = `${currentTurn.side} ${currentTurn.type} ${currentTurn.slot}`;
+            } else {
+                document.getElementById('turnTxt').innerText = "Finished";
+            }
+
+            // Render Hero Pool
+            const heroPoolDiv = document.getElementById('heroPool');
+            heroPoolDiv.innerHTML = '';
+            dm.heroes.forEach(h => {
+                const btn = document.createElement('button');
+                btn.className = 'hero-btn';
+                btn.innerText = h;
+                if (!dm.isHeroAvailable(h)) {
+                    btn.classList.add('disabled');
+                } else {
+                    btn.onclick = () => pickHero(h);
+                }
+                heroPoolDiv.appendChild(btn);
+            });
+
+            // Render Win Boxes
+            const winsReq = Math.ceil(dm.MatchState.bestOf / 2);
+            for(let side of ['blue', 'red']) {
+                const capSide = side.toUpperCase();
+                document.getElementById(`${side}Name`).innerText = dm.TeamState[capSide].name;
+                
+                let winHtml = '';
+                for(let i=0; i<winsReq; i++) {
+                    const isFilled = i < dm.TeamState[capSide].score;
+                    winHtml += `<div class="win-box ${isFilled ? 'filled' : ''}" onclick="toggleWin('${capSide}', ${i})"></div>`;
+                }
+                document.getElementById(`${side}Wins`).innerHTML = winHtml;
+            }
+
+            // Render Slots
+            renderSlots('BLUE');
+            renderSlots('RED');
+        }
+
+        function renderSlots(side) {
+            const sideStr = side.toLowerCase();
+            const bansDiv = document.getElementById(`${sideStr}Bans`);
+            const picksDiv = document.getElementById(`${sideStr}Picks`);
+            bansDiv.innerHTML = '';
+            picksDiv.innerHTML = '';
+
+            const currentTurn = dm.getCurrentTurn();
+            
+            // Generate Bans
+            const maxBans = dm.MatchState.mode === 'BAN10' ? 5 : 5;
+            for(let i=1; i<=maxBans; i++) {
+                const div = document.createElement('div');
+                div.className = 'slot';
+                const heroId = dm.DraftState[`${sideStr}Bans`][i-1];
+                div.innerText = heroId ? heroId : `Ban ${i}`;
+                
+                if(currentTurn && currentTurn.side === side && currentTurn.type === 'BAN' && currentTurn.slot === i) {
+                    div.classList.add('active-turn');
+                }
+                bansDiv.appendChild(div);
+            }
+
+            // Generate Picks
+            for(let i=1; i<=5; i++) {
+                const div = document.createElement('div');
+                div.className = 'slot';
+                const heroId = dm.DraftState[`${sideStr}Picks`][i-1];
+                div.innerText = heroId ? heroId : `Pick ${i}`;
+                
+                if(currentTurn && currentTurn.side === side && currentTurn.type === 'PICK' && currentTurn.slot === i) {
+                    div.classList.add('active-turn');
+                }
+                picksDiv.appendChild(div);
+            }
+        }
+
+        // Initial render
+        render();
+
+    </script>
+</body>
+</html>
