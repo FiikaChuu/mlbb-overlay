@@ -69,50 +69,80 @@ body {
     /* EDIT: 0% = warna asli, 100% = hitam-putih */
 }
 
-/* ── Kotak Nama Turnamen (tengah ban row) ── */
-.tournamentname {
+/* ── Kotak Kosong Teratas (Tengah Ban Row) ── */
+.top-empty-bar {
     width: 300px;
-    /* EDIT: lebar kotak nama turnamen */
     height: 68px;
-    /* EDIT: tinggi kotak nama turnamen */
-    background-color: #9900ff;
-    background-image: url("Assets/Other/Tournamentnamebg.jpg");
-    background-size: 105%;
-    /* EDIT: zoom background gambar (100% = normal) */
-    background-position: center;
     margin-top: 1.3px;
     margin-left: 5px;
-    /* EDIT: jarak kiri kotak turnamen */
     margin-right: 5px;
-    /* EDIT: jarak kanan kotak turnamen */
-    text-align: center;
+    margin-bottom: 5px;
+    background-color: #ffffff;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.25);
+}
+
+/* Parent container */
+.top-row {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding-top: 10px;
+}
+
+.score-bars {
+    display: flex;
+    gap: 4px;
+    padding: 0 25px;
+    align-self: flex-start;
+    /* naik ke atas */
+}
+
+.score-bars.left {
+    flex-direction: row;
+    /* bar dari kiri ke kanan */
+}
+
+.score-bars.right {
+    flex-direction: row-reverse;
+    /* bar dari kanan ke kiri */
+}
+
+.score-bar {
+    width: 8px;
+    height: 35px;
+    background-color: #333333;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.score-bar.active.blue {
+    background-color: #0b2b63;
+}
+
+.score-bar.active.red {
+    background-color: #d10020;
+}
+
+.header-texts {
+    display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
 }
 
-/* ── Teks nama turnamen di tengah ── */
-.tournamentnamemid {
-    font-size: 30px;
-    /* EDIT: ukuran font nama turnamen */
-    margin-top: 17px;
-    /* EDIT: geser teks ke bawah dalam kotak */
-    font-weight: normal;
-    text-align: center;
-    align-items: center;
-    color: #ffffff;
-    /* EDIT: warna teks nama turnamen */
+.header-text-1 {
+    font-size: 18px;
+    color: #000000;
+    font-weight: 900;
+    line-height: 1.1;
+    text-transform: uppercase;
 }
 
-/* ── Input nama turnamen (di control panel) ── */
-.tournamentnamebox {
-    width: 200px;
-    /* EDIT: lebar input box nama turnamen */
-    height: 30px;
-    /* EDIT: tinggi input box */
-    margin-top: 13px;
-    margin-right: 10px;
-    margin-left: 10px;
+.header-text-2 {
+    font-size: 12px;
+    color: #888888;
+    font-weight: bold;
+    text-transform: uppercase;
 }
 
 
@@ -120,197 +150,158 @@ body {
    DISPLAY — PANEL INFO TENGAH (PICK ROW)
 ══════════════════════════════════════════════ */
 
-/* ── Panel tengah: logo + VS + win ── */
+/* ── Panel tengah: logo + Timer (KOTAK UTAMA TIMER) ── */
 .tournamentinfo {
     width: 300px;
-    /* EDIT: lebar panel tengah */
-    height: 209.7px;
-    /* EDIT: tinggi panel tengah (harus sama dengan pick1) */
-    background-color: #ff0000;
-    background-image: url("Assets/Other/pg");
-    background-size: 110%;
-    /* EDIT: zoom background gambar panel tengah */
-    background-position: center;
+    height: 208.65px;
     margin-left: 5px;
-    /* EDIT: jarak kiri panel tengah */
     margin-right: 5px;
-    /* EDIT: jarak kanan panel tengah */
-}
-
-/* ── Logo turnamen (gambar di atas panel tengah) ── */
-.tournamentlogo {
-    width: 150px;
-    /* EDIT: lebar area logo turnamen */
-    height: 75px;
-    /* EDIT: tinggi area logo turnamen */
-    margin-left: 65px;
-    /* EDIT: geser logo ke kanan (centering manual) */
-    margin-top: 10px;
-    /* EDIT: jarak logo dari atas panel tengah */
-    overflow: hidden;
-}
-
-.logoprop {
-    justify-content: space-around;
-    width: 150px;
-    /* EDIT: lebar gambar logo turnamen */
-    height: 75px;
-    /* EDIT: tinggi gambar logo turnamen */
-    object-fit: contain;
-}
-
-/* ── 1. Container Utama (Logo - Timer - Logo) ── */
-.bluevsred {
-    width: 250px;
-    /* Total ruang untuk 3 elemen (83.3 x 3) */
-    height: 80px;
-    margin-left: 14.4px;
-    /* Sesuaikan dengan desain aslimu */
-    margin-top: 20px;
+    background-color: #ffffff;
+    position: relative;
     display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    /* PAKSA agar tidak turun ke bawah/sebelah doang */
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    box-sizing: border-box;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.timer-columns {
+    display: flex;
+    width: 100%;
+    flex: 1;
     justify-content: space-between;
     align-items: center;
 }
 
-/* ── 2. Kotak Logo Kiri & Kanan ── */
-.bluelogo,
-.redlogo {
-    width: 83.3px;
-    height: 80px;
-    position: relative;
-    /* KUNCI: Biar bar hijau bisa berpatokan di sini */
-    overflow: visible !important;
-    /* KUNCI: Biar bar hijau di atas tidak kepotong */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-shrink: 0;
-    /* Paksa ukuran logo tidak mengecil/hilang */
-}
-
-/* ── 3. Bar Hijau Melayang (DIPISAH KIRI & KANAN BIAR CUSTOM MANUAL) ── */
-
-/* --- SETTING MANUAL BAR TIM KIRI --- */
-.bluelogo .vs-bar-box {
-    position: absolute;
-    /* UBAH ANGKA TOP DI BAWAH INI UNTUK NAIK/TURUN. 
-       Makin kecil minusnya (misal -5px, -2px, 0), makin mepet ke logo */
-    top: -10px;
-    left: -14.6px;
-    /* Ubah ke angka plus misal 5px kalau mau geser ke kanan */
-    width: 100%;
-    /* Lebar bar kiri */
-    height: 8px;
-    /* Ketebalan bar kiri */
-    background-color: #008000 !important;
-    border-radius: 2px;
-    z-index: 99;
-}
-
-/* --- SETTING MANUAL BAR TIM KANAN --- */
-.redlogo .vs-bar-box {
-    position: absolute;
-    /* UBAH ANGKA TOP DI BAWAH INI UNTUK NAIK/TURUN BAR KANAN */
-    top: -10px;
-    left: 15px;
-    width: 100%;
-    /* Lebar bar kanan */
-    height: 8px;
-    /* Ketebalan bar kanan */
-    background-color: #008000 !important;
-    border-radius: 2px;
-    z-index: 99;
-}
-
-/* Biar fill/isi warnanya ngikutin wadah utamanya */
-.vs-bar-fill {
+/* KOLOM KIRI & KANAN (Logo Tim) */
+.center-col-logo {
+    width: 85px;
     height: 100%;
-    width: 100%;
-    background-color: inherit;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
 }
 
-/* ── 4. WADAH TIMER UTAMA (DI TENGAH) ── */
-.vslogo {
-    width: 83.3px;
-    height: 80px;
-    position: relative; /* Kunci biar isi di dalamnya bisa digeser bebas */
+.image-container {
+    flex: 1;
     display: flex;
-    align-items: center;     /* Posisi default rata tengah vertikal */
-    justify-content: center; /* Posisi default rata tengah horizontal */
-    flex-shrink: 0;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
 }
 
-/* ── WADAH ANGKA & TITIK MERAH (CUSTOM MANUAL GESER) ── */
-.vs-timer-num {
-    position: relative;
-    /* UBAH ANGKA DI BAWAH INI UNTUK GESER SELURUH TIMER (ANGKA + TITIK): */
-    top: 0px;  /* Minus (-) untuk naik, Plus (+) untuk turun */
-    left: 0px; /* Minus (-) untuk ke kiri, Plus (+) untuk ke kanan */
-    
+.image-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.team-name-bar {
+    height: 28px;
     display: flex;
-    flex-direction: column; /* "column" = Titik di atas angka. Ganti jadi "row" kalau mau sebelahan */
+    justify-content: center;
+    align-items: center;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.team-name-bar.blue {
+    background-color: #0b2b63;
+}
+
+.team-name-bar.red {
+    background-color: #d10020;
+}
+
+/* KOLOM TENGAH (Fase & Countdown) */
+.center-col-timer {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    
-    /* UBAH INI UNTUK MENGATUR JARAK ANTARA TITIK MERAH DAN ANGKA 60 */
-    gap: 5px; 
+    z-index: 2;
+    background-color: #ffffff;
 }
 
-/* ── ANGKA TIMER (60) ── */
-.vs-timer-num span:last-child {
-    font-family: 'bebas neue', sans-serif;
-    /* UBAH INI UNTUK MEMBESARKAN / MENGECILKAN ANGKA */
-    font-size: 32px; 
-    color: #ffffff;
-    line-height: 1;
-    text-shadow: 0px 4px 10px rgba(0, 0, 0, 0.8); /* Biar angka lebih kebaca kalau background terang */
+.phase-status {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    color: #666666;
+    font-weight: 900;
+    margin-bottom: 5px;
+    text-transform: uppercase;
 }
 
-/* ── TITIK MERAH (DOT) ── */
-.vs-dot {
-    /* UBAH INI UNTUK MEMBESARKAN / MENGECILKAN TITIK MERAH */
-    width: 8px;  
-    height: 8px; 
-    background-color: #ff0000;
-    border-radius: 50%; /* Bikin bentuknya bulat sempurna */
-    display: block;
-}
-
-/* Animasi saat < 10 detik (Biarkan saja, sudah aman) */
-.vs-dot.urgent {
-    animation: vs-dot-pulse 0.5s ease-in-out infinite alternate;
-}
-
-@keyframes vs-dot-pulse {
-    from {
-        transform: scale(1);
-        background: #ff2200;
-    }
-    to {
-        transform: scale(1.4);
-        background: #ff0000;
-        box-shadow: 0 0 10px #ff0000; /* Tambahan efek cahaya biar makin keren pas kedip */
-    }
-}
-
-.vsprop {
-    display: none;
-}
-
-/* ── LOGO TIM DALAM KOTAK (CUSTOM MANUAL GESER) ── */
-.image-container img {
-    /* UBAH INI JIKA LOGO INGIN LEBIH KECIL ATAU BESAR */
-    width: 83.3px;
-    height: 80px;
-    object-fit: contain; /* Menjaga agar logo tidak gepeng */
-    
+.timer-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: relative;
-    /* UBAH ANGKA DI BAWAH INI UNTUK GESER GAMBAR LOGO SAJA: */
-    top: 0px;  /* Geser logo naik/turun */
-    left: 0px; /* Geser logo kiri/kanan */
+    width: 100%;
+}
+
+.countdown-number {
+    font-family: Arial, sans-serif;
+    font-size: 65px;
+    font-weight: 900;
+    color: #333333;
+    line-height: 1;
+}
+
+/* PANAH HIJAU */
+.green-triangle {
+    width: 0;
+    height: 0;
+    border-top: 12px solid transparent;
+    border-bottom: 12px solid transparent;
+    position: absolute;
+    top: 50%;
+    margin-top: -12px;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 3;
+}
+
+.green-triangle.active {
+    opacity: 1;
+}
+
+.green-triangle.left {
+    border-right: 18px solid #00d200;
+    right: 50%;
+    margin-right: 70px;
+    left: auto;
+}
+
+.green-triangle.right {
+    border-left: 18px solid #00d200;
+    left: 50%;
+    margin-left: 70px;
+    right: auto;
+}
+
+.green-triangle.center {
+    border-right: 12px solid transparent;
+    border-left: 12px solid transparent;
+    border-bottom: 18px solid #00d200;
+    border-top: 0;
+    margin: 5px 0;
+    opacity: 0;
+}
+
+.green-triangle.center.active {
+    opacity: 1;
 }
 
 /* ── Row Win Indicators (bar kecil menang) ── */
@@ -556,12 +547,12 @@ body {
 ══════════════════════════════════════════════ */
 
 .fly-in {
-    animation: flyIn 1.5s ease-in-out;
+    animation: flyIn 0.3s ease-out;
     /* EDIT: durasi animasi masuk hero (detik) */
 }
 
 .fly-out {
-    animation: flyOut 1.2s ease-in-out;
+    animation: flyOut 0.3s ease-in;
     /* EDIT: durasi animasi keluar hero (detik) */
 }
 
@@ -626,4 +617,56 @@ body {
     /* EDIT: ukuran font checkbox label win */
     border-radius: 4px;
     border: 1px solid #ddd;
+}
+
+/* =========================================
+   BOTTOM TIMER THIN LINE
+========================================= */
+.bottom-thin-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background-color: transparent;
+    z-index: 9999;
+}
+
+.bottom-thin-bar.idle::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background-color: #ffffff;
+    transform: translateX(-50%);
+    z-index: 2;
+}
+
+.bottom-thin-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    transform-origin: center;
+    transform: scaleX(0);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bottom-thin-fill.idle {
+    background-color: #888888;
+    transform: scaleX(1) !important;
+}
+
+.bottom-thin-fill.active.blue-turn {
+    background-color: #0077ff;
+    box-shadow: 0 0 10px #0077ff;
+}
+
+.bottom-thin-fill.active.red-turn {
+    background-color: #ff0044;
+    box-shadow: 0 0 10px #ff0044;
 }

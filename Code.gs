@@ -109,18 +109,22 @@ function setupTournamentSheets() {
   heroSheet.getRange(2, 1, heroData.length, 1).setValues(heroData);
   
   // SETUP "SETTINGS"
-  settingsSheet.getRange('A1:B6').setValues([
-    ["TOURNAMENT SETTINGS", ""],
+  settingsSheet.getRange('A1:B9').setValues([
+    ["MATCH HEADER CONFIG", ""],
+    ["Tournament Name / Season", "REGULAR SEASON"],
+    ["Match / Game Desc", "MATCH 1 - GAME 1"],
     ["BO Mode", "BO3"],
-    ["Draft Mode", "Ban 5"],
-    ["First Pick", "Blue"],
     ["Timer Duration (s)", 30],
-    ["Turn Start Timestamp", ""]
+    ["Turn Start Timestamp", ""],
+    ["UI Mode", "Opsi Normal"],
+    ["Draft Mode", "Ban 5"],
+    ["First Pick", "Blue"]
   ]);
-  settingsSheet.getRange('A1:B1').setFontWeight('bold').setBackground('#4c8bf5').setFontColor('white');
-  settingsSheet.getRange('B2').setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(['BO1', 'BO3', 'BO5', 'BO7']).build());
-  settingsSheet.getRange('B3').setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(['Ban 5', 'Ban 3']).build());
-  settingsSheet.getRange('B4').setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(['Blue', 'Red']).build());
+  settingsSheet.getRange('A1:B1').merge().setFontWeight('bold').setBackground('#4c8bf5').setFontColor('white');
+  settingsSheet.getRange('B4').setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(['BO1', 'BO3', 'BO5', 'BO7']).build());
+  settingsSheet.getRange('B7').setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(['Opsi Normal', 'Opsi Pro']).build());
+  settingsSheet.getRange('B8').setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(['Ban 5', 'Ban 3']).build());
+  settingsSheet.getRange('B9').setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(['Blue', 'Red']).build());
   settingsSheet.autoResizeColumns(1, 2);
   
   // SETUP "MATCH_CONTROL"
@@ -172,7 +176,7 @@ function onEdit(e) {
     const matchSheet = e.source.getSheetByName('MATCH_CONTROL');
     if (!matchSheet) return;
 
-    if (a1 === 'B2') { // BO Mode berubah
+    if (a1 === 'B4') { // BO Mode berubah
       matchSheet.getRange('B4:E4').clearDataValidations().clearContent();
       matchSheet.getRange('H4:K4').clearDataValidations().clearContent();
       
@@ -185,9 +189,9 @@ function onEdit(e) {
       } else if (val === 'BO7') {
         matchSheet.getRange('B4:E4').insertCheckboxes(); matchSheet.getRange('H4:K4').insertCheckboxes();
       }
-    } else if (a1 === 'B3' || a1 === 'B4') { // Draft Mode atau First Pick berubah
-      const draftMode = sheet.getRange('B3').getValue();
-      const firstPick = sheet.getRange('B4').getValue();
+    } else if (a1 === 'B8' || a1 === 'B9') { // Draft Mode atau First Pick berubah
+      const draftMode = sheet.getRange('B8').getValue();
+      const firstPick = sheet.getRange('B9').getValue();
       updateDraftUI(matchSheet, draftMode, firstPick);
     }
   }
@@ -198,8 +202,8 @@ function onEdit(e) {
   
   if (isDraftCell && val && val !== "") {
     const settingsSheet = e.source.getSheetByName('SETTINGS');
-    const draftMode = settingsSheet.getRange('B3').getValue();
-    const firstPick = settingsSheet.getRange('B4').getValue();
+    const draftMode = settingsSheet.getRange('B8').getValue();
+    const firstPick = settingsSheet.getRange('B9').getValue();
     const draftPhases = getDraftPhases(draftMode, firstPick);
     
     let editedPhaseIndex = -1;
@@ -278,8 +282,8 @@ function onEdit(e) {
       
       const settingsSheet = e.source.getSheetByName('SETTINGS');
       if (settingsSheet) {
-        const fp = settingsSheet.getRange('B4').getValue();
-        settingsSheet.getRange('B4').setValue(fp === 'Blue' ? 'Red' : 'Blue');
+        const fp = settingsSheet.getRange('B9').getValue();
+        settingsSheet.getRange('B9').setValue(fp === 'Blue' ? 'Red' : 'Blue');
       }
       sheet.getRange(checkCol).setValue(false);
       
@@ -290,8 +294,9 @@ function onEdit(e) {
       
       const settingsSheet = e.source.getSheetByName('SETTINGS');
       if (settingsSheet) {
-        const draftMode = settingsSheet.getRange('B3').getValue();
-        const firstPick = settingsSheet.getRange('B4').getValue();
+        settingsSheet.getRange('B6').setValue("");
+        const draftMode = settingsSheet.getRange('B8').getValue();
+        const firstPick = settingsSheet.getRange('B9').getValue();
         const phases = getDraftPhases(draftMode, firstPick);
         sheet.getRange(phases[0][0]).activate();
       } else {
@@ -317,8 +322,8 @@ function onEdit(e) {
       
       const settingsSheet = e.source.getSheetByName('SETTINGS');
       if (settingsSheet) {
-        settingsSheet.getRange('B4').setValue("Blue");
-        const draftMode = settingsSheet.getRange('B3').getValue();
+        settingsSheet.getRange('B9').setValue("Blue");
+        const draftMode = settingsSheet.getRange('B8').getValue();
         const phases = getDraftPhases(draftMode, "Blue");
         sheet.getRange(phases[0][0]).activate();
       } else {
@@ -331,8 +336,8 @@ function onEdit(e) {
       const settingsSheet = e.source.getSheetByName('SETTINGS');
       if (settingsSheet) {
         settingsSheet.getRange('B6').setValue(new Date().getTime());
-        const draftMode = settingsSheet.getRange('B3').getValue();
-        const firstPick = settingsSheet.getRange('B4').getValue();
+        const draftMode = settingsSheet.getRange('B8').getValue();
+        const firstPick = settingsSheet.getRange('B9').getValue();
         const phases = getDraftPhases(draftMode, firstPick);
         
         let firstEmpty = phases[0][0];
@@ -364,12 +369,15 @@ function doGet(e) {
       .setMimeType(ContentService.MimeType.JSON);
   }
   
-  const settingsData = sSheet.getRange('B2:B6').getValues();
-  const boMode = settingsData[0][0];
-  const draftMode = settingsData[1][0];
-  const firstPick = settingsData[2][0];
+  const settingsData = sSheet.getRange('B2:B9').getValues();
+  const headerText1 = settingsData[0][0];
+  const headerText2 = settingsData[1][0];
+  const boMode = settingsData[2][0];
   const timerDuration = settingsData[3][0] || 30;
   const turnStartTime = settingsData[4][0] || "";
+  const uiMode = settingsData[5][0] || "Opsi Normal";
+  const draftMode = settingsData[6][0];
+  const firstPick = settingsData[7][0];
   
   const winsNeeded = Math.ceil(parseInt(boMode.replace('BO', '')) / 2);
   
@@ -409,6 +417,7 @@ function doGet(e) {
   };
 
   let foundIncompletePhase = false;
+  let activePhaseGroup = null;
   for (let i = 0; i < draftPhases.length; i++) {
     let phase = draftPhases[i];
     if (foundIncompletePhase) {
@@ -418,13 +427,25 @@ function doGet(e) {
       // Cek apakah fase ini komplit
       let isComplete = true;
       phase.forEach(cell => {
-        if (getCellVal(cell) === "") isComplete = false;
+        if (getCellVal(cell) === "") {
+          isComplete = false;
+          if (!activePhaseGroup) activePhaseGroup = phase[0];
+        }
       });
       // Jika ada slot yang kosong di fase ini, tandai sebagai Incomplete Phase
       if (!isComplete) {
         foundIncompletePhase = true;
       }
     }
+  }
+  
+  let currentPhaseStatus = "";
+  if (activePhaseGroup) {
+    let col = activePhaseGroup.charAt(0);
+    if (col === 'A' || col === 'G') currentPhaseStatus = "BANNING";
+    else currentPhaseStatus = "DRAFTING";
+  } else {
+    currentPhaseStatus = "FINISHED";
   }
   // ============================================================
 
@@ -438,7 +459,7 @@ function doGet(e) {
   }
   
   const state = {
-    settings: { boMode, draftMode, firstPick, winsNeeded, timerDuration, turnStartTime },
+    settings: { headerText1, headerText2, boMode, draftMode, firstPick, winsNeeded, timerDuration, turnStartTime, uiMode, currentPhaseStatus },
     blueSide: {
       teamName: blueInfo[0][0], logoUrl: blueInfo[1][0], winCheck: blueWinsArr.map(v => v === true),
       currentScore: blueScore, isMatchWinner: blueScore >= winsNeeded,

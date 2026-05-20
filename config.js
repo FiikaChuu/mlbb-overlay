@@ -3,4 +3,4 @@
 // ============================================================
 // PASTE URL DARI DEPLOYMENT GOOGLE APPS SCRIPT DI SINI
 // JANGAN LUPA BERI TANDA KUTIP ("...") DI AWAL DAN AKHIR URL
-const GOOGLE_SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbzj_Gyy6FD1DWdTgI7cKy7RJz182b5R9HcVXKZ-bcLYLLcJ_t6rE0yR3_ywrHpZimIAAg/exec";
+const GOOGLE_SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbz67okSo0IThqWQG54X8yrPL-3_BwHqExa90cDVs90rEkO4BJipOnQ_Miw38cG0udJ6FA/exec";

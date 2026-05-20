@@ -5,7 +5,7 @@ Berikut adalah daftar hero yang asetnya belum lengkap (gambar PNG atau suara OGG
 | Nama Hero | Status Gambar (PNG) | Status Suara (OGG) |
 |---|---|---|
 | Ixia | ✅ Ada | ❌ Hilang |
-| Kalea | ❌ Hilang | ✅ Ada |
+| Kalea | ✅ Ada | ✅ Ada |
 | Natan | ✅ Ada | ❌ Hilang |
 | Nolan | ✅ Ada | ❌ Hilang |
 | Novaria | ✅ Ada | ❌ Hilang |
