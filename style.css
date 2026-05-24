@@ -116,11 +116,11 @@ body {
 }
 
 .score-bar.active.blue {
-    background-color: #0b2b63;
+    background-color: #005eff;
 }
 
 .score-bar.active.red {
-    background-color: #d10020;
+    background-color: #005eff;
 }
 
 .header-texts {
@@ -379,6 +379,7 @@ body {
 
 .pick {
     display: flex;
+    position: relative;
 }
 
 /* ── Kotak Pick Hero ── */

@@ -264,12 +264,29 @@ function renderState(state) {
     const h1 = document.getElementById('headerText1');
     const h2 = document.getElementById('headerText2');
     const phase = document.getElementById('phaseStatus');
-    
+
     const isIdle = !state.settings.turnStartTime || activeTeam === 'None';
-    
-    if (h1) h1.textContent = state.settings.headerText1 || '';
-    if (h2) h2.textContent = state.settings.headerText2 || '';
+
+    if (h1) h1.textContent = state.settings.headerText1 || 'REGULAR SEASON';
+    if (h2) h2.textContent = state.settings.headerText2 || 'MATCH 1 - GAME 1';
     if (phase) phase.textContent = isIdle ? 'WAITING' : (state.settings.currentPhaseStatus || '');
+
+    // Update Ban Visibility (Ban 3 Mode)
+    const banBoxes = document.querySelectorAll('.ban .ban1');
+    if (banBoxes.length >= 10) {
+        if (state.settings.draftMode === 'Ban 3') {
+            [0, 1, 8, 9].forEach(i => {
+                banBoxes[i].style.display = ''; // Bersihkan error sebelumnya
+                banBoxes[i].style.visibility = 'hidden';
+            });
+        } else {
+            [0, 1, 8, 9].forEach(i => {
+                banBoxes[i].style.display = '';
+                banBoxes[i].style.visibility = 'visible';
+                banBoxes[i].style.opacity = '1';
+            });
+        }
+    }
 
     // Update Team Logos & UI Mode
     updateUIMode(state.settings.uiMode, teams, activeTeam, isIdle);
@@ -305,7 +322,7 @@ function renderSlots(slots) {
             // Ditimpa hero lain
             const existing = container.querySelector('img');
             const hObj = heroes.find(h => h.name.toLowerCase().replace(/['\-\s\.]/g, '') === heroName);
-            
+
             if (existing && hObj) {
                 existing.classList.add('fly-out');
                 setTimeout(() => addHeroImage(container, hObj), 200);
@@ -357,7 +374,7 @@ function renderTeamNames(teams) {
     const d2 = document.getElementById('teamNameDisplay2');
     const c1 = document.getElementById('centerTeamNameBlue');
     const c2 = document.getElementById('centerTeamNameRed');
-    
+
     if (d1) d1.textContent = teams.BLUE.name || 'Blue Side';
     if (d2) d2.textContent = teams.RED.name || 'Red Side';
     if (c1) c1.textContent = teams.BLUE.name || 'BLUE';
@@ -429,7 +446,7 @@ function getActiveTeam(slots, draftMode, firstPick) {
         }
         return slotObj;
     };
-    
+
     let phases = [];
     if (draftMode === 'Ban 3') {
         phases = [
@@ -440,7 +457,7 @@ function getActiveTeam(slots, draftMode, firstPick) {
             swap([6]), swap([16]), swap([7]), swap([17]), swap([8]), swap([18]), swap([1]), swap([11, 12]), swap([2, 3]), swap([13]), swap([19]), swap([9]), swap([20]), swap([10]), swap([14]), swap([4, 5]), swap([15])
         ];
     }
-    
+
     for (let i = 0; i < phases.length; i++) {
         let hasEmpty = false;
         let emptySlot = null;
@@ -468,21 +485,21 @@ function updateUIMode(mode, teams, activeTeam, isIdle) {
 
     const logoL = document.getElementById('image1');
     const logoR = document.getElementById('image2');
-    
+
     // In Normal mode, hide logo image
-    if (logoL) { 
-        logoL.src = teams.BLUE.logo || ''; 
-        logoL.style.opacity = isPro ? '1' : '0'; 
+    if (logoL) {
+        logoL.src = teams.BLUE.logo || '';
+        logoL.style.opacity = isPro ? '1' : '0';
     }
-    if (logoR) { 
-        logoR.src = teams.RED.logo || ''; 
-        logoR.style.opacity = isPro ? '1' : '0'; 
+    if (logoR) {
+        logoR.src = teams.RED.logo || '';
+        logoR.style.opacity = isPro ? '1' : '0';
     }
 
     const triL = document.getElementById('greenTriangleLeft');
     const triR = document.getElementById('greenTriangleRight');
     const triC = document.getElementById('greenTriangleCenter');
-    
+
     if (isIdle) {
         if (triL) triL.classList.remove('active');
         if (triR) triR.classList.remove('active');
@@ -511,7 +528,7 @@ function renderSidebarBars(side, bestOf, winCheckArray) {
     if (!container) return;
 
     container.innerHTML = '';
-    
+
     for (let i = 0; i < winsReq; i++) {
         const bar = document.createElement('div');
         bar.className = 'score-bar';
@@ -555,7 +572,7 @@ function updateTimerData(settings, activeTeam) {
         if (timerInterval) clearInterval(timerInterval);
         timerInterval = null;
         if (timerDisplay) timerDisplay.textContent = currentTimerDuration;
-        
+
         if (fillBar) {
             fillBar.className = 'bottom-thin-fill idle';
             fillBar.style.transform = `scaleX(1)`;
@@ -566,11 +583,11 @@ function updateTimerData(settings, activeTeam) {
 
 function tickTimer() {
     if (!currentTurnStartTime) return;
-    
+
     const now = new Date().getTime();
     const elapsedSec = (now - currentTurnStartTime) / 1000;
     let remainingSec = Math.ceil(currentTimerDuration - elapsedSec);
-    
+
     if (remainingSec < 0) remainingSec = 0;
 
     const timerDisplay = document.getElementById('countdownTimer');
@@ -582,7 +599,7 @@ function tickTimer() {
     if (!fill) return;
 
     fill.style.transform = `scaleX(${Math.max(0, percentage)})`;
-    
+
     // Warna aktif bar
     fill.className = 'bottom-thin-fill active';
     if (currentActiveTeam === 'Blue') fill.classList.add('blue-turn');
