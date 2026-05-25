@@ -19,13 +19,13 @@ body {
 
 .ban {
     display: flex;
+    align-items: stretch;
     margin-top: 20px;
     /* EDIT: jarak ban row dari atas layar */
 }
 
 /* ── Nama Tim Blue (kiri) ── */
 .teamnameblue {
-    width: 300px;
     /* EDIT: lebar kotak nama tim blue */
     height: 68px;
     /* EDIT: tinggi kotak nama tim blue */
@@ -33,14 +33,15 @@ body {
     line-height: 49px;
     background-color: #006bd6;
     /* EDIT: warna background nama tim blue */
-    margin: 1px;
+    margin: 0 1px;
+    box-sizing: border-box;
+    display: flex;
     align-items: center;
     justify-content: center;
 }
 
 /* ── Nama Tim Red (kanan) ── */
 .teamnamered {
-    width: 300px;
     /* EDIT: lebar kotak nama tim red */
     height: 68px;
     /* EDIT: tinggi kotak nama tim red */
@@ -48,7 +49,29 @@ body {
     line-height: 49px;
     background-color: #fc0341;
     /* EDIT: warna background nama tim red */
-    margin: 1px;
+    margin: 0 1px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ======================================================== */
+/* KONTROL LEBAR SPANDUK NAMA TIM (TEAM A & TEAM B)         */
+/* Ubah nilai px di bawah ini agar sejajar dengan batas merah */
+/* ======================================================== */
+.team-name-banner {
+    flex: 0 0 260.8px;
+    /* Nilai 260.8px wajib bisa saya edit bebas (ukuran 2 kartu hero) */
+}
+
+.ban-container {
+    display: flex;
+    flex: 1;
+    justify-content: space-evenly;
+    align-items: center;
+    height: 68px;
+    box-sizing: border-box;
 }
 
 /* ── Kotak Ban Hero ── */
@@ -58,7 +81,7 @@ body {
     height: 68px;
     /* EDIT: tinggi satu kotak ban (sama = kotak) */
     background-color: aqua;
-    margin: 1px;
+    margin: 0 1px;
     /* EDIT: jarak antar kotak ban */
     overflow: hidden;
     background-image: url("Assets/Other/ban.png");
@@ -71,14 +94,12 @@ body {
 
 /* ── Kotak Kosong Teratas (Tengah Ban Row) ── */
 .top-empty-bar {
-    width: 300px;
+    flex: 0 0 300px;
     height: 68px;
-    margin-top: 1.3px;
-    margin-left: 5px;
-    margin-right: 5px;
-    margin-bottom: 5px;
+    margin: 0 5px;
     background-color: #ffffff;
     box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.25);
+    box-sizing: border-box;
 }
 
 /* Parent container */
@@ -88,6 +109,10 @@ body {
     align-items: flex-start;
     justify-content: space-between;
     padding-top: 10px;
+    padding-bottom: 10px;
+    overflow: visible !important;
+    z-index: 10;
+    position: relative;
 }
 
 .score-bars {
@@ -116,11 +141,11 @@ body {
 }
 
 .score-bar.active.blue {
-    background-color: #0b2b63;
+    background-color: #005eff;
 }
 
 .score-bar.active.red {
-    background-color: #d10020;
+    background-color: #005eff;
 }
 
 .header-texts {
@@ -128,6 +153,17 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    overflow: visible !important;
+}
+
+/* ======================================================== */
+/* KONTROL POSISI KEDUA TEKS HEADER (REGULAR SEASON & MATCH)*/
+/* Ubah nilai '5px' di bawah ini untuk menggeser naik/turun */
+/* ======================================================== */
+.match-header-wrapper {
+    position: relative;
+    top: 20px;
+    /* JANGAN ubah display flex atau alignment di dalamnya */
 }
 
 .header-text-1 {
@@ -152,7 +188,7 @@ body {
 
 /* ── Panel tengah: logo + Timer (KOTAK UTAMA TIMER) ── */
 .tournamentinfo {
-    width: 300px;
+    flex: 0 0 300px;
     height: 208.65px;
     margin-left: 5px;
     margin-right: 5px;
@@ -379,6 +415,8 @@ body {
 
 .pick {
     display: flex;
+    position: relative;
+    margin-top: 5px;
 }
 
 /* ── Kotak Pick Hero ── */
@@ -388,10 +426,10 @@ body {
     height: 208.65px;
     /* EDIT: tinggi satu kotak pick */
     background-color: blueviolet;
-    margin: 1px;
+    margin: 0 1px;
     /* EDIT: jarak antar kotak pick */
     overflow: hidden;
-    background-image: url("Assets/Other/Pickbg.jpg");
+    background-image: url("Assets/Other/hero_pick.png");
     background-position: center;
     background-size: 110%;
     /* EDIT: zoom background pick (100% = normal) */
