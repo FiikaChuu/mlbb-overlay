@@ -415,8 +415,6 @@ body {
 
 .pick {
     display: flex;
-    position: relative;
-    margin-top: 5px;
 }
 
 /* ── Kotak Pick Hero ── */
