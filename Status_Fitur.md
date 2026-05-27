@@ -4,27 +4,7 @@ Berikut adalah daftar hero yang asetnya belum lengkap (gambar PNG atau suara OGG
 
 | Nama Hero | Status Gambar (PNG) | Status Suara (OGG) |
 |---|---|---|
-| Ixia | ✅ Ada | ❌ Hilang |
-| Kalea | ✅ Ada | ✅ Ada |
-| Natan | ✅ Ada | ❌ Hilang |
-| Nolan | ✅ Ada | ❌ Hilang |
-| Novaria | ✅ Ada | ❌ Hilang |
-| Obsidia | ✅ Ada | ❌ Hilang |
-| Odette | ✅ Ada | ❌ Hilang |
-| Paquito | ✅ Ada | ❌ Hilang |
-| Pharsa | ✅ Ada | ❌ Hilang |
-| Phoveus | ✅ Ada | ❌ Hilang |
-| Popol & Kupa | ✅ Ada | ❌ Hilang |
-| Rafaela | ✅ Ada | ❌ Hilang |
-| Roger | ✅ Ada | ❌ Hilang |
-| Ruby | ✅ Ada | ❌ Hilang |
-| Saber | ✅ Ada | ❌ Hilang |
-| Selena | ✅ Ada | ❌ Hilang |
-| Silvanna | ✅ Ada | ❌ Hilang |
 | Sora | ✅ Ada | ❌ Hilang |
-| Sun | ✅ Ada | ❌ Hilang |
-| Soyou | ✅ Ada | ❌ Hilang |
-| Terizla | ✅ Ada | ❌ Hilang |
 | Thamuz | ✅ Ada | ❌ Hilang |
 | Tigreal | ✅ Ada | ❌ Hilang |
 | Uranus | ✅ Ada | ❌ Hilang |
