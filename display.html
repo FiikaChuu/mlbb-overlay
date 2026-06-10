@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
 
 <head>
     <meta charset="UTF-8">
@@ -44,7 +45,21 @@
         </div>
 
         <!-- [BARU] BAR PERSEGI PANJANG TERATAS -->
-        <div class="top-empty-bar" id="topEmptyBar"></div>
+        <div class="header-text-1-standalone" id="headerText1Container">
+            <div id="headerText1">BO 3 GAME 1</div>
+        </div>
+
+        <div class="top-empty-bar" id="topEmptyBar">
+            <div class="center-col-logo left">
+                <div class="image-container">
+                    <img id="image1" src="" alt="Logo turnamen">
+                </div>
+            </div>
+        </div>
+
+        <div class="header-text-2-standalone" id="headerText2Container">
+            <div id="headerText2">MATCH 4</div>
+        </div>
 
         <div class="ban1">
             <div id="image-display-20" class="image-display"></div>
@@ -70,7 +85,6 @@
 
     <!-- PICK ROW -->
     <div class="pick">
-
         <!-- Blue Side Picks 1–5 -->
         <div class="pick1">
             <div class="nameholder">
@@ -126,22 +140,18 @@
         <div class="tournamentinfo">
             <div class="top-row">
                 <div class="score-bars left" id="scoreBarsLeft"></div>
-                <div class="header-texts match-header-wrapper">
-                    <div class="header-text-1" id="headerText1">REGULAR SEASON</div>
-                    <div class="header-text-2" id="headerText2">MATCH 1 - GAME 1</div>
-                </div>
+                <div class="phase-status" id="phaseStatus">BANNING</div>
                 <div class="score-bars right" id="scoreBarsRight"></div>
             </div>
 
             <div class="timer-columns">
                 <div class="center-col-logo left">
                     <div class="image-container">
-                        <img id="image1" src="" alt="Logo Blue">
+
                     </div>
                 </div>
 
                 <div class="center-col-timer">
-                    <div class="phase-status" id="phaseStatus">BANNING</div>
                     <div id="greenTriangleCenter" class="green-triangle center"></div>
                     <div class="timer-row">
                         <div id="greenTriangleLeft" class="green-triangle left"></div>
