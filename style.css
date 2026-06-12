@@ -785,10 +785,7 @@ body {
 
     overflow: hidden;
 
-    background:
-        linear-gradient(180deg,
-            #241700 0%,
-            #120b00 100%);
+    background: linear-gradient(180deg, #f5c842 0%, #c8952a 55%, #5c3b00 100%) !important;
 
     /* clip-path: polygon(8% 0,
             100% 0,
@@ -824,8 +821,7 @@ body {
 
     opacity: 0.92;
 
-    filter:
-        saturate(1.05) contrast(1.05);
+    filter: contrast(1.1) saturate(1.1) drop-shadow(0 10px 10px rgba(0,0,0,0.6));
 }
 
 .pick1::before {
@@ -879,9 +875,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(180deg,
-            rgba(20, 13, 0, 0.85) 0%,
-            rgba(5, 3, 0, 0.95) 100%);
+    background: linear-gradient(180deg, rgba(15, 10, 0, 0.95) 0%, rgba(0, 0, 0, 1) 100%) !important;
     border-top: 1px solid rgba(245, 200, 66, 0.5);
     overflow: hidden;
     color: #f5c842;
@@ -1316,4 +1310,57 @@ body {
     100% {
         left: 140%;
     }
+}
+
+/* Mengunci ukuran box tengah agar konsisten menjadi tempat iklan */
+.top-empty-bar.ad-space {
+    flex: 0 0 300px !important; /* Menyamakan dengan lebar panel bawah (300px) */
+    width: 300px !important; 
+    margin-left: 5px !important;  /* Menyamakan margin panel bawah */
+    margin-right: 5px !important; /* Menyamakan margin panel bawah */
+}
+
+/* Memperlebar gap (jarak) antar kotak ban hero */
+.ban1 {
+    margin: 0 4px; 
+}
+
+/* =========================================================
+   REVISI 3: TRANSPARAN, BOX POLOS, POIN LURUS & 100% FIT 
+========================================================= */
+
+/* 1. LAYOUT OTOMATIS FIT (MEPET KANAN KIRI) 
+   Mengkalkulasi ukuran kotak secara dinamis agar 100% pas di resolusi 1080p/720p */
+html, body {
+    width: 100vw;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.ban {
+    width: 100vw;
+    box-sizing: border-box;
+}
+
+.pick {
+    width: 100vw;
+    justify-content: space-between; /* Menyebar kotak rata dari ujung kiri ke kanan */
+    box-sizing: border-box;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.pick1 {
+    /* Rumus sakti agar 10 kotak hero + 1 kotak tengah presisi 100% layar */
+    width: calc((100vw - 350px) / 10) !important;
+    flex: none !important;
+}
+
+
+
+.score-bar {
+    transform: none !important; /* Menghapus efek kemiringan (skew) */
+    border-radius: 4px !important; /* Sedikit menumpulkan sudutnya agar lebih rapi saat lurus */
 }
